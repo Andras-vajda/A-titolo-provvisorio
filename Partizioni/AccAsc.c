@@ -19,6 +19,7 @@ void DisplayPart(unsigned int c[], size_t s) {
     puts("");
 }
 /****************************************************************************/
+
 void AccelDesc(unsigned int n) {
     size_t i, j, k, m;
     unsigned int part[PART_SIZE];
@@ -66,6 +67,7 @@ void AccelDesc(unsigned int n) {
     }
 }
 /****************************************************************************/
+// Zoghbi & Stojmenovic
 void AccelAsc(unsigned int n) {
     size_t i, j, k, m;
     unsigned int part[PART_SIZE];
