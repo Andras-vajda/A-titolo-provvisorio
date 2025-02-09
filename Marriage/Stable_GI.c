@@ -3,7 +3,7 @@
 **                                                                      **
 **  PROGRAMMA......:  Stable_GI.c                                       **
 **  AUTORE.........:  M.A.W. 1968                                       **
-**  LICENZA........:  Public Domain                                     **
+**  LICENZA........:  MIT License                                       **
 **  DATA...........:  31/mar/2020 19:18                                 **
 **  VERSIONE.......:  1.0                                               **
 **                                                                      **
