@@ -19,7 +19,7 @@ void DisplayPart(unsigned int c[], size_t s) {
     puts("");
 }
 /****************************************************************************/
-
+// Kelleher & O'Sullivan
 void AccelDesc(unsigned int n) {
     size_t i, j, k, m;
     unsigned int part[PART_SIZE];
