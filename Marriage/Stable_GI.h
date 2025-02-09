@@ -3,7 +3,7 @@
 **                                                                      **
 **  PROGRAMMA......:  Stable_GI.h                                       **
 **  AUTORE.........:  M.A.W. 1968                                       **
-**  LICENZA........:  Public Domain                                     **
+**  LICENZA........:  MIT License                                       **
 **  DATA...........:  31/mar/2020 19:36                                 **
 **  VERSIONE.......:  1.0                                               **
 **                                                                      **
@@ -83,7 +83,7 @@ struct
     /*
     ** Array delle preferenze: ad ogni persona corrisponde una smartlist.
     ** Le locazioni notevoli sono accessibili in O(1), ma anche
-    ** la cancellazione è realizzata in O(1).
+    ** la cancellazione Ã¨ realizzata in O(1).
     */
     head_t M_pref[PROBLEM_SIZE];
     head_t F_pref[PROBLEM_SIZE];
