@@ -11,7 +11,7 @@ int Coef[MAX_PENTA];
 
 void EnumPartitions2(int m)
 /*
-**  Algorithm 3.6
+**  Algorithm 3.6 by Kreher & Stinson
 **  compute the partition numbers P[i] for i <= m
 */
 {
