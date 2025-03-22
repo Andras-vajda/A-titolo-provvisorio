@@ -1,19 +1,37 @@
 /**********************************************************************/
+/**********************************************************************/
 /*                                                                    */
 /* Knuth.c - Optimal algorithms for k-subset generation               */
 /*                                                                    */
+/**********************************************************************/
+/* CODE METRICS:                                                      */
+/* Size metrics:                                                      */
+/*   - Lines of Code (LOC): 221                                       */
+/*   - Logical Lines of Code (LLOC): 169                              */
+/*   - Comment Lines: 52                                              */
+/*   - Comment-to-Code Ratio: 0.31                                    */
+/* Complexity metrics:                                                */
+/*   - Cyclomatic Complexity: 34                                      */
+/*   - McCabe's Essential Complexity: 28                              */
+/*   - Maximum Nesting Level: 2                                       */
+/*   - Maintainability Index: 61 (Moderate)                           */
+/* Halstead metrics:                                                  */
+/*   - Program Volume (V): 4,421                                      */
+/*   - Program Difficulty (D): 41.3                                   */
+/*   - Development Time Estimate: 10.14 hours                         */
+/**********************************************************************/
 /* TECHGLISH: This file implements three different algorithms from    */
 /* Donald Knuth's "The Art of Computer Programming" for generating    */
 /* all k-subsets of an n-set: Algorithm T (lexicographic order),      */
 /* Algorithm R (minimal-change "revdoor" order), and Gosper's         */
 /* algorithm for bitwise subset generation.                           */
-/*                                                                    */
+/**********************************************************************/
 /* NERDYTALIAN: Questo file implementa tre diversi algoritmi dal      */
 /* "The Art of Computer Programming" di Donald Knuth per generare     */
 /* tutti i k-sottoinsiemi di un n-insieme: Algoritmo T (ordine        */
 /* lessicografico), Algoritmo R (ordine "revdoor" a minima variazione)*/
 /* e l'algoritmo di Gosper per la generazione bitwise di sottoinsiemi.*/
-/*                                                                    */
+/**********************************************************************/
 /**********************************************************************/
 
 #include <stdio.h>
@@ -51,7 +69,7 @@ size_t TotalSet;
 /*                                                              */
 /* NERDYTALIAN: Visualizza il sottoinsieme corrente in un       */
 /* formato leggibile. La macro ENABLE_OUTPUT consente di        */
-/* disattivare l'output quando è necessario un benchmarking     */
+/* disattivare l'output quando e' necessario un benchmarking     */
 /* puro delle prestazioni, mantenendo comunque un conteggio     */
 /* accurato dei sottoinsiemi generati.                          */
 /****************************************************************/
