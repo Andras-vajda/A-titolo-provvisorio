@@ -135,18 +135,18 @@ void print_binary(Set_t value, size_t n, size_t d, bool prefix) {
     puts("");
 }
 
-/******************* SUBSET GENERATION ALGORITHM *****************/
-/* TECHGLISH: Gosper's algorithm for generating the next k-subset*/
+/******************* SUBSET GENERATION ALGORITHM ******************/
+/* TECHGLISH: Gosper's algorithm for generating the next k-subset */
 /* in lexicographic order. This elegant bit manipulation algorithm*/
 /* directly computes the successor without iteration, providing   */
-/* optimal performance for combinatorial generation.             */
-/*                                                               */
-/* NERDYTALIAN: Algoritmo di Gosper per generare il prossimo     */
-/* k-sottoinsieme in ordine lessicografico. Questo elegante      */
-/* algoritmo di manipolazione dei bit calcola direttamente il    */
-/* successore senza iterazione, fornendo prestazioni ottimali    */
-/* per la generazione combinatoria.                              */
-/*****************************************************************/
+/* optimal performance for combinatorial generation.              */
+/*                                                                */
+/* NERDYTALIAN: Algoritmo di Gosper per generare il prossimo      */
+/* k-sottoinsieme in ordine lessicografico. Questo elegante       */
+/* algoritmo di manipolazione dei bit calcola direttamente il     */
+/* successore senza iterazione, fornendo prestazioni ottimali     */
+/* per la generazione combinatoria.                               */
+/******************************************************************/
 
 // Genera il successore del subset corrente
 Set_t next_subset(Set_t subset, Set_t limit) {
@@ -159,20 +159,20 @@ Set_t next_subset(Set_t subset, Set_t limit) {
     return ripple | ones;                 // Combina il risultato
 }
 
-/******************* HAMMING DISTANCE GENERATION *****************/
+/******************* HAMMING DISTANCE GENERATION ******************/
 /* TECHGLISH: This core function generates all k-subsets at a     */
-/* specific Hamming distance d from a reference subset. The      */
-/* algorithm works by systematically removing d elements from    */
-/* the base subset and adding d new elements, exploring all      */
-/* possible combinations of additions and removals.              */
-/*                                                               */
-/* NERDYTALIAN: Questa funzione fondamentale genera tutti i      */
-/* k-sottoinsiemi a una distanza di Hamming d specifica da un    */
-/* sottoinsieme di riferimento. L'algoritmo funziona rimuovendo  */
+/* specific Hamming distance d from a reference subset. The       */
+/* algorithm works by systematically removing d elements from     */
+/* the base subset and adding d new elements, exploring all       */
+/* possible combinations of additions and removals.               */
+/*                                                                */
+/* NERDYTALIAN: Questa funzione fondamentale genera tutti i       */
+/* k-sottoinsiemi a una distanza di Hamming d specifica da un     */
+/* sottoinsieme di riferimento. L'algoritmo funziona rimuovendo   */
 /* sistematicamente d elementi dal sottoinsieme base e aggiungendo*/
-/* d nuovi elementi, esplorando tutte le possibili combinazioni  */
-/* di aggiunte e rimozioni.                                      */
-/*****************************************************************/
+/* d nuovi elementi, esplorando tutte le possibili combinazioni   */
+/* di aggiunte e rimozioni.                                       */
+/******************************************************************/
 
 // Funzione per generare k-subset a distanza desiderata
 void generate_k_subset(size_t n, size_t k, size_t d) {
@@ -198,13 +198,13 @@ void generate_k_subset(size_t n, size_t k, size_t d) {
             Set_t modified_base = base_set & ~base_mask;  // Rimuovi d elementi
             Set_t shifted_diff = diff_mask << k;          // Aggiungi d nuovi elementi
             Set_t result = modified_base | shifted_diff;  // Combina le operazioni
+            ++counter;            
+            print_binary(result, n, d, true);
+            diff_mask = next_subset(diff_mask, (1 << (n - k))); // Prossima maschera
             if (counter == SIZE_MAX) {
                 fprintf(stderr, "Errore: raggiunto il limite massimo di conteggio. Terminazione.\n");
                 exit(EXIT_FAILURE); // Termina immediatamente l'esecuzione
             }
-            ++counter;            
-            print_binary(result, n, d, true);
-            diff_mask = next_subset(diff_mask, (1 << (n - k))); // Prossima maschera
         }
         base_mask = next_subset(base_mask, (1 << k)); // Prossima combinazione di bit da rimuovere
     }
@@ -231,20 +231,20 @@ void generate_all_subsets(size_t n, size_t k) {
     }
 }
 
-/******************* MAIN PROGRAM *******************************/
-/* TECHGLISH: Command-line interface for the subset generator.   */
-/* Takes parameters n (universe size) and k (subset size), with  */
-/* validation to ensure the constraints are met. Demonstrates    */
-/* both targeted generation with a random distance and complete  */
-/* generation of all subsets by distance.                        */
-/*                                                               */
-/* NERDYTALIAN: Interfaccia a riga di comando per il generatore  */
+/******************* MAIN PROGRAM **********************************/
+/* TECHGLISH: Command-line interface for the subset generator.     */
+/* Takes parameters n (universe size) and k (subset size), with    */
+/* validation to ensure the constraints are met. Demonstrates      */
+/* both targeted generation with a random distance and complete    */
+/* generation of all subsets by distance.                          */
+/*                                                                 */
+/* NERDYTALIAN: Interfaccia a riga di comando per il generatore    */
 /* di sottoinsiemi. Prende i parametri n (dimensione dell'universo)*/
 /* e k (dimensione del sottoinsieme), con validazione per garantire*/
-/* che i vincoli siano soddisfatti. Dimostra sia la generazione  */
-/* mirata con una distanza casuale sia la generazione completa   */
-/* di tutti i sottoinsiemi per distanza.                         */
-/*****************************************************************/
+/* che i vincoli siano soddisfatti. Dimostra sia la generazione    */
+/* mirata con una distanza casuale sia la generazione completa     */
+/* di tutti i sottoinsiemi per distanza.                           */
+/*******************************************************************/
 
 int main(int argc, char *argv[]) {
     size_t n, k, d;

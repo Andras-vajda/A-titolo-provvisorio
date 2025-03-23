@@ -116,15 +116,15 @@ void generateHammingDistance1(size_t k, size_t n) {
             // Modifica il subset: rimuovi i, aggiungi j
             uint64_t modified = (B & clear_mask) | set_mask;
 
+            // Incrementa il contatore e stampa il subset
+            ++counter;
+            printSubset(modified, n);
+
             // Controllo overflow del contatore
             if (counter == SIZE_MAX) {
                 fprintf(stderr, "Errore: raggiunto il limite massimo di conteggio. Terminazione.\n");
                 exit(EXIT_FAILURE);
             }
-            
-            // Incrementa il contatore e stampa il subset
-            ++counter;
-            printSubset(modified, n);
         }
     }
     
