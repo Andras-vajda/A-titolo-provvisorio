@@ -1,0 +1,8 @@
+﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(531,5): warning MSB8028: la directory intermedia (x64\Release\) contiene file condivisi da un altro progetto (STSC_lib.vcxproj). Tale condizione può comportare un comportamento di pulizia e ricompilazione non corretto.
+  STSC.c
+D:\Documents\Articoli\Designs\Code\C\STSC.c(353,40): warning C4267: 'inizializzazione': conversione da 'size_t' a 'uint32_t'. Possibile perdita di dati.
+D:\Documents\Articoli\Designs\Code\C\STSC.c(353,64): warning C4267: 'inizializzazione': conversione da 'size_t' a 'uint32_t'. Possibile perdita di dati.
+D:\Documents\Articoli\Designs\Code\C\STSC.c(367,40): warning C4267: 'inizializzazione': conversione da 'size_t' a 'uint32_t'. Possibile perdita di dati.
+D:\Documents\Articoli\Designs\Code\C\STSC.c(367,56): warning C4267: 'inizializzazione': conversione da 'size_t' a 'uint32_t'. Possibile perdita di dati.
+D:\Documents\Articoli\Designs\Code\C\STSC.c(359,30): warning C4267: 'inizializzazione': conversione da 'size_t' a 'uint32_t'. Possibile perdita di dati.
+  STSC_lib.vcxproj -> D:\Documents\Articoli\Designs\Code\LIB\STSC.lib
