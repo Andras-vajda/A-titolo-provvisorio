@@ -8,7 +8,7 @@ This repository provides implementations in C and Python for generating cyclic S
 
 ### What are Steiner Triple Systems?
 
-A Steiner Triple System of order v, denoted STS(v), is a collection of 3-element subsets (called triples or blocks) of a v-element set such that every pair of distinct elements appears in exactly one triple. STS(v) exists if and only if v ? 1 or 3 (mod 6), v ? 7, with the exception of v = 9.
+A Steiner Triple System of order v, denoted STS(v), is a collection of 3-element subsets (called triples or blocks) of a v-element set such that every pair of distinct elements appears in exactly one triple. STS(v) exists if and only if v ≡ 1 or 3 (mod 6), v ≥ 7, with the exception of v = 9.
 
 ### Features
 
@@ -67,7 +67,7 @@ gcc -std=c99 STSC_LUT.c -o stsc_generator
 The implementation uses the Heffter-Peltesohn method, which is based on difference triples to efficiently generate cyclic STS. For a detailed explanation of the mathematical theory behind Steiner Triple Systems and this implementation, please refer to the article "Design combinatori: un primo assaggio" included in this repository.
 
 Key parameters:
-- v: Number of elements in the base set (must satisfy v ? 1 or 3 (mod 6), v ? 7, v ? 9)
+- v: Number of elements in the base set (must satisfy v ≡ 1 or 3 (mod 6), v ≥ 7, v ≠ 9)
 - b: Number of triples in the STS, given by b = v(v-1)/6
 - r: Number of triples containing a given element, given by r = (v-1)/2
 
@@ -80,3 +80,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Colbourn, C.J., & Rosa, A. (1999). "Triple Systems." Oxford University Press. ISBN: 978-0198535768.
 - Lindner, C.C., & Rodger, C.A. (2008). "Design Theory (2nd Edition)." Chapman & Hall/CRC. ISBN: 978-1420082968.
 - Peltesohn, R. (1939). "Eine Loesung der beiden Heffterschen Differenzenprobleme." Compositio Mathematica, 6, 251-257.
+
+Let me know if you'd like me to elaborate on any specific aspect of these README files or if you need additional documentation for the Steiner Triple Systems project.
