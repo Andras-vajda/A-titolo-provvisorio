@@ -14,7 +14,7 @@ This file provides a complete implementation of the Steiner Triple System genera
 
 ### Features
 
-- Supports all valid orders v where v ? 1 or 3 (mod 6), v ? 7, excluding v = 9
+- Supports all valid orders v where v ≡ 1 or 3 (mod 6), v ≥ 7, excluding v = 9
 - Generates Steiner Triple Systems up to v = 99
 - Uses the elegant Heffter-Peltesohn cyclic method
 - Interactive interface for exploring different STS orders
@@ -99,7 +99,7 @@ The implementation follows the Heffter-Peltesohn method described in the main ar
 1. Select precomputed difference triples for the given value of v
 2. Generate base triples from these difference triples
 3. Generate all v cyclic shifts of each base triple
-4. For v ? 3 (mod 6), add a "short orbit" of additional triples
+4. For v ≡ 3 (mod 6), add a "short orbit" of additional triples
 5. Verify that every pair of elements appears in exactly one triple
 
 The use of NumPy for matrix operations significantly speeds up the verification process, making it feasible to verify even large systems in reasonable time.
