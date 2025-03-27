@@ -64,7 +64,7 @@ gcc -std=c99 STSC_LUT.c -o stsc_generator
 
 ## Theoretical Background
 
-The implementation uses the Heffter-Peltesohn method, which is based on difference triples to efficiently generate cyclic STS. For a detailed explanation of the mathematical theory behind Steiner Triple Systems and this implementation, please refer to the article "Design combinatori: un primo assaggio" included in this repository.
+The implementation uses the Heffter-Peltesohn method, which is based on difference triples to efficiently generate cyclic STS. For a detailed explanation of the mathematical theory behind Steiner Triple Systems and this implementation, please refer to the article "Design combinatori: un primo assaggio".
 
 Key parameters:
 - v: Number of elements in the base set (must satisfy v ≡ 1 or 3 (mod 6), v ≥ 7, v ≠ 9)
@@ -80,5 +80,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Colbourn, C.J., & Rosa, A. (1999). "Triple Systems." Oxford University Press. ISBN: 978-0198535768.
 - Lindner, C.C., & Rodger, C.A. (2008). "Design Theory (2nd Edition)." Chapman & Hall/CRC. ISBN: 978-1420082968.
 - Peltesohn, R. (1939). "Eine Loesung der beiden Heffterschen Differenzenprobleme." Compositio Mathematica, 6, 251-257.
-
-Let me know if you'd like me to elaborate on any specific aspect of these README files or if you need additional documentation for the Steiner Triple Systems project.
