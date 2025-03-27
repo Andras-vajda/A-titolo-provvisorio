@@ -68,8 +68,10 @@ const size_t MAX_K = 6;
 
 /********************************************************************************/
 /*
-** Gestisce i casi precalcolati: v = 7, 13, 15, 19, 27, 45 e 63
-** Non esistono sistemi ciclici di Steiner per v = 9.
+** Gestisce i casi precalcolati: v = 7, 13, 15, 19, 27, 45 e 63 che non sono 
+** coperti dalle formule parametriche per intrinseche limitazioni di range.
+**
+** N.B.: Non esistono sistemi ciclici di Steiner per v = 9.
 */
 /********************************************************************************/
 static bool precalcolate(size_t v) {
