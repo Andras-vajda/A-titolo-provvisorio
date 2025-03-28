@@ -2,22 +2,30 @@
 /*
  * STSC_LUT.c - Cyclic Steiner Triple System Generator (LUT-based)
  *
+ * DESCRIZIONE: 
+ *   Generatore di Sistemi Tripli di Steiner Ciclici (STSC)
+ *   esempio basato su LUT precalcolata con terne di Heffter-Peltesohn.
+ *   Supporta tutti i valori di v a due cifre e il caso base v = 7.
+ *   Unica eccezione nota: non esiste un STS ciclico per v = 9.
+ *
  * DESCRIPTION:
- *   Generator of cyclic Steiner Triple Systems (STS) using the Heffter-Peltesohn
- *   method with precomputed difference triples stored in lookup tables.
- *   Supports orders v where v ? 1 or 3 (mod 6), v ? 7, excluding v = 9.
+ *   Generator of cyclic Steiner Triple Systems (C-STS) using the 
+ *   Heffter-Peltesohn method with precomputed difference triples
+ *   stored in lookup tables.
+ *   Supports orders v where v = 1 or 3 (mod 6), v > 6.
+ *   There notoriously exists no C-STS of order 9.
  *
  * METRICS:
- *   - Lines of Code (LOC).................: 193
+ *   - Lines of Code (LOC)..................: 193
  *   - Source Lines of Code (SLOC)..........: 143
  *   - Comment Lines (CLOC).................: 36
  *   - Comment to Code Ratio (CCR)..........: 0.25
- *   - Cyclomatic Complexity (CC)..........: 18
- *   - Function Count.....................: 5
- *   - Average Function Length.............: 29 SLOC
- *   - Halstead Volume....................: 3814.2
- *   - Halstead Difficulty................: 42.3
- *   - Maintenance Index..................: 61.7
+ *   - Cyclomatic Complexity (CC)...........: 18
+ *   - Function Count.......................: 5
+ *   - Average Function Length..............: 29 SLOC
+ *   - Halstead Volume......................: 3814.2
+ *   - Halstead Difficulty..................: 42.3
+ *   - Maintenance Index....................: 61.7
  *
  * REFERENCES:
  *   [1] Peltesohn, R. (1939). "Eine Loesung der beiden Heffterschen Differenzenprobleme."
