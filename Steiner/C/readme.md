@@ -4,12 +4,15 @@ This directory contains the C implementation of the Steiner Triple Systems (STS)
 
 ## Files
 
-- **STSC_LUT.c**: Standalone implementation of the STS generator using precomputed difference triples
 - **STSC_gen.c**: Core implementation for the STSC_gen executable, which serves as the main entry point for the STS generator
 - **STSC.c**: Core library implementation of the STS generation functions
 - **STSC_mode.c**: Implementation of the different operating modes (interactive, batch, test)
 - **STSC_UI.c**: User interface and I/O handling functions
-- **QLCI.c**: Utility for generating Commutative Idempotent Latin Squares (QLCI), an essential component in constructing some types of design combinatorics
+
+## Extra files:
+
+- **STSC_LUT.c**: Standalone example of STSC generation using precomputed difference triples LUT
+- **QLCI.c**: Standalone easy example or generating Commutative Idempotent Latin Squares (QLCI), as an extra freebie for the reader
 
 ## STSC_LUT.c
 
