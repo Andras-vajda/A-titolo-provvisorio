@@ -1,82 +1,109 @@
-# Steiner Triple Systems Generator
+# C Implementation for Steiner Triple Systems
 
-A comprehensive implementation of Steiner Triple Systems (STS) generation using the elegant Heffter-Peltesohn method. This repository contains code examples that accompany the article "Design combinatori: un primo assaggio" which introduces combinatorial designs with a focus on Steiner Triple Systems.
+This directory contains the C implementation of the Steiner Triple Systems (STS) generator using the Heffter-Peltesohn method, along with supplementary utilities for combinatorial designs.
 
-## Repository Overview
+## Files
 
-This repository provides implementations in C and Python for generating cyclic Steiner Triple Systems using the Heffter-Peltesohn method. The code is designed to be didactic, clearly illustrating the mathematical concepts while remaining computationally efficient.
+- **STSC_LUT.c**: Standalone implementation of the STS generator using precomputed difference triples
+- **STSC_gen.c**: Core implementation for the STSC_gen executable, which serves as the main entry point for the STS generator
+- **STSC.c**: Core library implementation of the STS generation functions
+- **STSC_mode.c**: Implementation of the different operating modes (interactive, batch, test)
+- **STSC_UI.c**: User interface and I/O handling functions
+- **QLCI.c**: Easy example for generating Commutative Idempotent Latin Squares (QLCI), as a freebie gift for the reader.
 
-### What are Steiner Triple Systems?
+## STSC_LUT.c
 
-A Steiner Triple System of order v, denoted STS(v), is a collection of 3-element subsets (called triples or blocks) of a v-element set such that every pair of distinct elements appears in exactly one triple. STS(v) exists if and only if v ≡ 1 or 3 (mod 6), v ≥ 7, with the exception of v = 9.
+This file provides a complete, standalone implementation of the Steiner Triple System generator using the Heffter-Peltesohn method with precomputed difference triples stored in lookup tables. It's designed to be educational and straightforward to understand.
 
 ### Features
 
-- Efficient generation of Steiner Triple Systems for any valid v from 7 to 99
-- Look-up table (LUT) based implementation using precalculated difference triples
-- Verification utilities to confirm correctness of generated systems
-- CSV export functionality for generated systems
-- Comprehensive examples in both C and Python
-- Visual Studio solution for Windows development
-- Support scripts in multiple languages (Python, Lua, Tcl, AWK)
+- Supports all valid orders v where v ≡ 1 or 3 (mod 6), v ≥ 7, excluding v = 9
+- Generates Steiner Triple Systems up to v = 99
+- Uses the elegant Heffter-Peltesohn cyclic method
+- Provides functions to verify the correctness of generated systems
 
-## Directory Structure
-
-- **[C/](C/README.md)**: C implementation of the STS generator
-- **[Include/](Include/README.md)**: Header files for the C implementation
-- **[Python/](Python/README.md)**: Python implementation of the STS generator
-- **[Script/](Script/README.md)**: Utility scripts for generating look-up tables and testing
-- **[VS_Solution/](VS_Solution/README.md)**: Visual Studio solution files for building and running on Windows
-
-## Getting Started
-
-### Prerequisites
-
-- For C code:
-  - C99 compliant compiler (e.g., gcc, Visual Studio)
-- For Python code:
-  - Python 3.6 or higher
-  - NumPy library
-
-### Quick Start with Python
+### Compilation
 
 ```bash
-cd Python
-python STSC_LUT.py
+gcc -std=c99 STSC_LUT.c -o stsc_lut
 ```
 
-Follow the prompts to generate a Steiner Triple System of your chosen order v.
-
-### Quick Start with C (Visual Studio)
-
-1. Open the solution file `VS_Solution/VS_Solution.sln` in Visual Studio
-2. Build the solution
-3. Run the `STSC_gen` project
-4. Follow the prompts to generate a Steiner Triple System
-
-### Quick Start with C (Command Line)
+### Usage
 
 ```bash
-cd C
-gcc -std=c99 STSC_LUT.c -o stsc_generator
-./stsc_generator
+./stsc_lut
 ```
 
-## Theoretical Background
+The program will prompt you to input a value for v. It will then generate an STS of order v and display the results.
 
-The implementation uses the Heffter-Peltesohn method, which is based on difference triples to efficiently generate cyclic STS. For a detailed explanation of the mathematical theory behind Steiner Triple Systems and this implementation, please refer to the article "Design combinatori: un primo assaggio".
+## STSC_gen.c
 
-Key parameters:
-- v: Number of elements in the base set (must satisfy v ≡ 1 or 3 (mod 6), v ≥ 7, v ≠ 9)
-- b: Number of triples in the STS, given by b = v(v-1)/6
-- r: Number of triples containing a given element, given by r = (v-1)/2
+This file implements the core logic for the STSC_gen executable, which is a more feature-rich implementation of the STS generator.
 
-## License
+### Features
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- Supports interactive, batch, and test modes
+- Can save generated systems to CSV files
+- Supports command-line arguments for automation
+- Uses the library approach for modularity
 
-## References
+### Usage Modes
 
-- Colbourn, C.J., & Rosa, A. (1999). "Triple Systems." Oxford University Press. ISBN: 978-0198535768.
-- Lindner, C.C., & Rodger, C.A. (2008). "Design Theory (2nd Edition)." Chapman & Hall/CRC. ISBN: 978-1420082968.
-- Peltesohn, R. (1939). "Eine Loesung der beiden Heffterschen Differenzenprobleme." Compositio Mathematica, 6, 251-257.
+The executable supports several modes of operation:
+
+- **Interactive Mode**: Default mode that prompts the user for input
+- **Batch Mode**: Generates STS for a range of v values (e.g., `/batch 7 99`)
+- **Test Mode**: Runs tests to verify correctness (`/test`)
+- **Help Mode**: Displays usage instructions (`/?`)
+
+## QLCI.c
+
+This file provides a standalone utility for generating Commutative Idempotent Latin Squares (QLCI), which are important mathematical structures in combinatorial design theory and related to the construction of certain types of design systems.
+
+### Features
+
+- Generates QLCI of various odd orders (5, 7, 11, 15, 21, 29)
+- Implements an efficient rotational pattern-based generation algorithm
+- Provides a clear, educational implementation with extensive comments
+- Demonstrates memory-efficient implementation techniques
+
+### Important Note
+
+QLCI exist ONLY for odd orders. This is a fundamental mathematical property, not a limitation of the implementation.
+
+### Compilation
+
+```bash
+gcc -std=c99 QLCI.c -o qlci
+```
+
+### Usage
+
+```bash
+./qlci
+```
+
+The program will generate and display QLCI for all the predefined odd orders.
+
+## Building the Complete Application
+
+For the complete application with all features, it's recommended to use the Visual Studio solution provided in the `VS_Solution` directory. The solution properly links all dependencies and includes additional features like batch processing and verification.
+
+## Dependencies
+
+- C99 compliant compiler
+- Standard C libraries (stdio.h, stdlib.h, string.h)
+
+## Notes on Implementation
+
+The implementation follows the Heffter-Peltesohn method described in the main article. The key steps are:
+
+1. Select precomputed difference triples for the given value of v
+2. Generate base triples from these difference triples
+3. Generate all v cyclic shifts of each base triple
+4. For v ≡ 3 (mod 6), add a "short orbit" of additional triples
+5. Verify that every pair of elements appears in exactly one triple
+
+The computational complexity is O(v), making it extremely efficient compared to other methods, especially for large values of v.
+
+The QLCI implementation demonstrates efficient techniques for generating combinatorial structures with rotational patterns, using optimized memory allocation and bit operations for performance.
