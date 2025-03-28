@@ -1,12 +1,15 @@
 # C Implementation for Steiner Triple Systems
 
-This directory contains the C implementation of the Steiner Triple Systems (STS) generator using the Heffter-Peltesohn method.
+This directory contains the C implementation of the Steiner Triple Systems (STS) generator using the Heffter-Peltesohn method, along with supplementary utilities for combinatorial designs.
 
 ## Files
 
 - **STSC_LUT.c**: Standalone implementation of the STS generator using precomputed difference triples
 - **STSC_gen.c**: Core implementation for the STSC_gen executable, which serves as the main entry point for the STS generator
 - **STSC.c**: Core library implementation of the STS generation functions
+- **STSC_mode.c**: Implementation of the different operating modes (interactive, batch, test)
+- **STSC_UI.c**: User interface and I/O handling functions
+- **QLCI.c**: Utility for generating Commutative Idempotent Latin Squares (QLCI), an essential component in constructing some types of design combinatorics
 
 ## STSC_LUT.c
 
@@ -53,6 +56,35 @@ The executable supports several modes of operation:
 - **Test Mode**: Runs tests to verify correctness (`/test`)
 - **Help Mode**: Displays usage instructions (`/?`)
 
+## QLCI.c
+
+This file provides a standalone utility for generating Commutative Idempotent Latin Squares (QLCI), which are important mathematical structures in combinatorial design theory and related to the construction of certain types of design systems.
+
+### Features
+
+- Generates QLCI of various odd orders (5, 7, 11, 15, 21, 29)
+- Implements an efficient rotational pattern-based generation algorithm
+- Provides a clear, educational implementation with extensive comments
+- Demonstrates memory-efficient implementation techniques
+
+### Important Note
+
+QLCI exist ONLY for odd orders. This is a fundamental mathematical property, not a limitation of the implementation.
+
+### Compilation
+
+```bash
+gcc -std=c99 QLCI.c -o qlci
+```
+
+### Usage
+
+```bash
+./qlci
+```
+
+The program will generate and display QLCI for all the predefined odd orders.
+
 ## Building the Complete Application
 
 For the complete application with all features, it's recommended to use the Visual Studio solution provided in the `VS_Solution` directory. The solution properly links all dependencies and includes additional features like batch processing and verification.
@@ -73,3 +105,5 @@ The implementation follows the Heffter-Peltesohn method described in the main ar
 5. Verify that every pair of elements appears in exactly one triple
 
 The computational complexity is O(v), making it extremely efficient compared to other methods, especially for large values of v.
+
+The QLCI implementation demonstrates efficient techniques for generating combinatorial structures with rotational patterns, using optimized memory allocation and bit operations for performance.
