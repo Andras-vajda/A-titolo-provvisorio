@@ -54,9 +54,6 @@
 #define MAX_N 64 // Massima cardinalita' dell'universo
 #define MAX_K 32 // Limite pratico per k (evita tempi di elaborazione eccessivi)
 
-// Contatore per i sottoinsiemi generati
-size_t counter = 0;
-
 /******************* OUTPUT FUNCTION *****************************/
 /* TECHGLISH: Displays a subset in human-readable format, where  */
 /* the subset is represented as a bit vector. For each position  */
@@ -80,24 +77,26 @@ void printSubset(uint64_t B, size_t n) {
     printf("}\n");
 }
 
-/******************* UNIT DISTANCE GENERATOR ********************/
-/* TECHGLISH: Generates all k-subsets at Hamming semi-distance 1 */
+/******************* UNIT DISTANCE GENERATOR **********************/
+/* TECHGLISH: Generates all k-subsets at Hamming semi-distance 1  */
 /* from a reference subset. The algorithm works by systematically */
-/* replacing each element in the base subset with each element   */
-/* not in the base subset, producing exactly k*(n-k) new subsets.*/
-/*                                                               */
-/* NERDYTALIAN: Genera tutti i k-sottoinsiemi a semi-distanza di */
-/* Hamming 1 da un sottoinsieme di riferimento. L'algoritmo      */
-/* funziona sostituendo sistematicamente ogni elemento nel       */
-/* sottoinsieme base con ogni elemento non nel sottoinsieme base,*/
-/* producendo esattamente k*(n-k) nuovi sottoinsiemi.            */
-/*****************************************************************/
+/* replacing each element in the base subset with each element    */
+/* not in the base subset, producing exactly k*(n-k) new subsets. */
+/*                                                                */
+/* NERDYTALIAN: Genera tutti i k-sottoinsiemi a semi-distanza di  */
+/* Hamming 1 da un sottoinsieme di riferimento. L'algoritmo       */
+/* funziona sostituendo sistematicamente ogni elemento nel        */
+/* sottoinsieme base con ogni elemento non nel sottoinsieme base, */
+/* producendo esattamente k*(n-k) nuovi sottoinsiemi.             */
+/******************************************************************/
 
 void generateHammingDistance1(size_t k, size_t n) {
-    // Inizializza il subset base come primi k bit impostati a 1
-    uint64_t B = (1ULL << k) - 1; // Es. per k=3: B = 0b111
-    
-    counter = 0; // Reset del contatore
+    // Contatore per i sottoinsiemi generati
+    size_t counter = 0;
+
+    // Inizializza il subset base con i primi k bit impostati a 1
+    // Es. per k = 3: B = 0b111 = 7 = 2^3 -1
+    uint64_t B = (1ULL << k) - 1; 
 
     // Stampa il subset base per riferimento
     printf("Base subset:\n");
@@ -127,7 +126,6 @@ void generateHammingDistance1(size_t k, size_t n) {
             }
         }
     }
-    
     printf("\nTotale subset generati: %zu\n", counter);
 }
 
@@ -145,7 +143,7 @@ void generateHammingDistance1(size_t k, size_t n) {
 /*****************************************************************/
 
 int main(int argc, char *argv[]) {
-    // Argument parsing
+    // Argomenti da linea di comando
     if (argc != 3) {
         fprintf(stderr, "Uso: %s k n\n", argv[0]);
         return EXIT_FAILURE;
@@ -154,7 +152,7 @@ int main(int argc, char *argv[]) {
     size_t k = (size_t)atoi(argv[1]);
     size_t n = (size_t)atoi(argv[2]);
 
-    // Parameter validation
+    // Convalida dei parametri
     if (k < 3) {
         fprintf(stderr, "Errore: k deve essere maggiore di 2.\n");
         return EXIT_FAILURE;
@@ -175,8 +173,9 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    // Generate and print all subsets at unit Hamming distance
+    // Genera e stampa tutti i sottoinsiemi a semidistanza Hamming unitaria
     generateHammingDistance1(k, n);
+
     return EXIT_SUCCESS;
 }
 /** EOF: ksubset_DL.c **/

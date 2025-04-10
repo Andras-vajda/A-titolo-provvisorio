@@ -88,7 +88,7 @@ void printSubset(size_t k)
 #endif
 }
 
-/******************* ALGORITHM T: LEXICOGRAPHIC *****************/
+/******************* ALGORITHM T: LEXICOGRAPHIC ******************/
 /* TECHGLISH: Generates k-subsets in lexicographic order, as     */
 /* described in TAOCP 7.2.1.3, Algorithm T. This algorithm       */
 /* maintains the invariant S[0] < S[1] < ... < S[k-1] and uses   */
@@ -250,7 +250,7 @@ increase:
 /* prestazioni per universi di piccole dimensioni.              */
 /****************************************************************/
 
-void G_ksubsetGray(const size_t k, const size_t n) {
+void G_ksubsetGosper(const size_t k, const size_t n) {
     // Initialize with first k-subset: binary representation 00...0011...11 (k ones)
     uint64_t x = (1ULL << k) - 1;
     uint64_t limit = 1ULL << n;
@@ -336,9 +336,9 @@ int main(int argc, char* argv[]) {
     printf("%zu subset generati\n", TotalSet);
 
     // Run Gosper's algorithm
-    printf("\nG_ksubsetGray(%d, %d) per ordine Gray:\n", k, n);
+    printf("\nG_ksubsetGosper(%d, %d):\n", k, n);
     TotalSet = 0;
-    G_ksubsetGray(k, n);
+    G_ksubsetGosper(k, n);
     printf("%zu subset generati\n", TotalSet);
     
     free(S);

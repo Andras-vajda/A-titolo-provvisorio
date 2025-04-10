@@ -74,21 +74,7 @@ size_t counter = 0;
 /*****************************************************************/
 
 // Una comoda macro per la stampa dei subset
-#ifdef _MSC_VER
-// Usa BMI1 se supportato
-#include <intrin.h>
-#if defined(__AVX2__) || defined(__BMI1__) 
-#pragma intrinsic(__lzcnt)
-#define HAS_MORE_BITS(value, i) ((value) >> (31 - __lzcnt(value)) > (1U << (i)))
-#pragma message ("MSVC - posso usare intrinsic BMI1")
-#else
-// Fallback su una ordinaria formula bitfiddling
 #define HAS_MORE_BITS(value, i) ((value) & ~((1U << ((i) + 1)) - 1))
-#pragma message ("MSVC - uso di macro bitfiddling")
-#endif
-#else
-#error Questo codice e' progettato unicamente per Visual Studio.
-#endif
 
 /******************* OUTPUT FORMATTING FUNCTIONS *****************/
 /* TECHGLISH: Functions to display subsets in human-readable     */
@@ -103,14 +89,16 @@ size_t counter = 0;
 /* insieme ai metadati sul sottoinsieme.                         */
 /*****************************************************************/
 
-// Funzione per stampare un sottoinsieme
+// Funzione per la stampa di un sottoinsieme
 void print_set(Set_t value, size_t n) {
     printf(" {");
     for (char i = 0; i < n; ++i) {
         if (value & (1 << i)) {
-            printf("%c", 'a' + i); // Converte la posizione in carattere (a, b, c, ...)
+            // Converte la posizione in carattere (a, b, c, ...)
+            printf("%c", 'a' + i); 
             if (i < n - 1 && HAS_MORE_BITS(value, i)) {
-                printf(", "); // Aggiunge la virgola solo se ci sono altri elementi
+                // Aggiunge la virgola solo se ci sono altri elementi
+                printf(", "); 
             }
         }
     }
@@ -152,11 +140,16 @@ void print_binary(Set_t value, size_t n, size_t d, bool prefix) {
 Set_t next_subset(Set_t subset, Set_t limit) {
     if (subset == 0 || subset >= limit)
         return limit;
-    Set_t smallest = subset & -subset;    // Isola il bit piu' a destra (LSB)
-    Set_t ripple = subset + smallest;     // Propaga il riporto
-    Set_t ones = subset ^ ripple;         // Identifica i bit cambiati
-    ones = (ones >> 2) / smallest;        // Riposiziona i bit di ones
-    return ripple | ones;                 // Combina il risultato
+    // Isola il bit piu' a destra (LSB)
+    Set_t smallest = subset & -subset;    
+    // Propaga il riporto    
+    Set_t ripple = subset + smallest;     
+    // Identifica i bit cambiati    
+    Set_t ones = subset ^ ripple;         
+    // Riposiziona i bit a 1    
+    ones = (ones >> 2) / smallest;        
+    // Ricombina il risultato con un OR   
+    return ripple | ones;                 
 }
 
 /******************* HAMMING DISTANCE GENERATION ******************/
@@ -176,9 +169,12 @@ Set_t next_subset(Set_t subset, Set_t limit) {
 
 // Funzione per generare k-subset a distanza desiderata
 void generate_k_subset(size_t n, size_t k, size_t d) {
-    Set_t base_set = (1 << k) - 1;        // Crea base subset = {0,1,...,k-1}
-    Set_t diff_set = (1 << (n - k)) - 1;  // Set differenza (complemento)
-    Set_t base_mask = (1 << d) - 1;       // Maschera iniziale per d bit
+    // Crea base: subset = {0,1,...,k-1}    
+    Set_t base_set = (1 << k) - 1;        
+    // Set differenza (complemento)    
+    Set_t diff_set = (1 << (n - k)) - 1;  
+    // Maschera iniziale per d bit    
+    Set_t base_mask = (1 << d) - 1;       
 
     if (d == 0) {
         counter = 0;
@@ -195,18 +191,23 @@ void generate_k_subset(size_t n, size_t k, size_t d) {
     while (base_mask < (1 << k)) {
         Set_t diff_mask = (1 << d) - 1;
         while (diff_mask < (1 << (n - k))) {
-            Set_t modified_base = base_set & ~base_mask;  // Rimuovi d elementi
-            Set_t shifted_diff = diff_mask << k;          // Aggiungi d nuovi elementi
-            Set_t result = modified_base | shifted_diff;  // Combina le operazioni
+            // Rimuovi d elementi
+            Set_t modified_base = base_set & ~base_mask;  
+            // Aggiungi d nuovi elementi
+            Set_t shifted_diff = diff_mask << k;   
+            // Ricombina i valori con OR       
+            Set_t result = modified_base | shifted_diff;  
             ++counter;            
             print_binary(result, n, d, true);
-            diff_mask = next_subset(diff_mask, (1 << (n - k))); // Prossima maschera
+            // Prossima maschera
+            diff_mask = next_subset(diff_mask, (1 << (n - k))); 
             if (counter == SIZE_MAX) {
                 fprintf(stderr, "Errore: raggiunto il limite massimo di conteggio. Terminazione.\n");
-                exit(EXIT_FAILURE); // Termina immediatamente l'esecuzione
+                exit(EXIT_FAILURE);
             }
         }
-        base_mask = next_subset(base_mask, (1 << k)); // Prossima combinazione di bit da rimuovere
+        // Prossima combinazione di bit da rimuovere
+        base_mask = next_subset(base_mask, (1 << k)); 
     }
 }
 
