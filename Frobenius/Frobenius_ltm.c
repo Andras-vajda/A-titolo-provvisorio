@@ -89,10 +89,10 @@
 typedef struct {
     mp_int *coins;    // Array di monete (mp_int)
     int n;            // Numero di monete
-    int cached;       // Flag per indicare se il risultato è in cache
+    int cached;       // Flag per indicare se il risultato e' in cache
     mp_int result;    // Risultato (numero di Frobenius)
     char *debug_info; // Informazioni di debug
-    int verbose;      // Modalità verbose
+    int verbose;      // Modalita' verbose
 } frobenius_context_t;
 
 // Funzione per inizializzare il contesto
@@ -176,7 +176,7 @@ cleanup:
     return status;
 }
 
-// Funzione per implementare l'algoritmo di Round-Robin di Böcker-Lipták
+// Funzione per implementare l'algoritmo di Round-Robin di Boecker-Lipta'k
 // con ottimizzazioni significative
 int round_robin_algorithm(frobenius_context_t *ctx, mp_int *result) {
     if (!ctx || ctx->n <= 0) {
@@ -207,7 +207,7 @@ int round_robin_algorithm(frobenius_context_t *ctx, mp_int *result) {
         return case_n2(result, &ctx->coins[0], &ctx->coins[1]);
     }
     
-    // Ordinamento delle monete con quicksort (implementato più efficiente del bubble sort)
+    // Ordinamento delle monete con quicksort (implementato piu' efficiente del bubble sort)
     // In un'implementazione reale, sostituirei con qsort e una funzione di comparazione per mp_int
     for (int i = 0; i < ctx->n - 1; i++) {
         for (int j = 0; j < ctx->n - i - 1; j++) {
@@ -239,19 +239,19 @@ int round_robin_algorithm(frobenius_context_t *ctx, mp_int *result) {
     
     mp_clear(&gcd);
     
-    // Ottieni il valore della moneta più piccola (che sarà a_1)
+    // Ottieni il valore della moneta piu' piccola (che sara' a_1)
     unsigned long a_val;
     
     // Conversione sicura di mp_int in unsigned long
     if (mp_cmp_d(&ctx->coins[0], ULONG_MAX) == MP_GT) {
-        log_message(ctx, "La moneta più piccola è troppo grande per l'algoritmo corrente");
+        log_message(ctx, "La moneta piu' piccola e' troppo grande per l'algoritmo corrente");
         return MP_VAL;
     }
     
     mp_to_unsigned_bin_n(&ctx->coins[0], (unsigned char*)&a_val, sizeof(a_val));
     
     if (a_val > 10000000) {
-        log_message(ctx, "La moneta più piccola è troppo grande per l'algoritmo corrente");
+        log_message(ctx, "La moneta piu' piccola e' troppo grande per l'algoritmo corrente");
         return MP_VAL;
     }
     
@@ -271,7 +271,7 @@ int round_robin_algorithm(frobenius_context_t *ctx, mp_int *result) {
         return MP_MEM;
     }
     
-    // Inizializzazione più efficiente
+    // Inizializzazione piu' efficiente
     for (unsigned long i = 0; i < a_val; i++) {
         mp_init(&residue_table[i]);
         // Inizializza con "infinito" (valore molto grande)
@@ -329,7 +329,7 @@ int round_robin_algorithm(frobenius_context_t *ctx, mp_int *result) {
             if (!new_vals || !updated) {
                 if (new_vals) free(new_vals);
                 if (updated) free(updated);
-                continue; // Continuiamo con la prossima moneta se c'è un errore
+                continue; // Continuiamo con la prossima moneta se c'e' un errore
             }
             
             // Inizializza i valori per questa iterazione
@@ -388,7 +388,7 @@ int round_robin_algorithm(frobenius_context_t *ctx, mp_int *result) {
         }
     }
     
-    // Il numero di Frobenius è il massimo valore meno a
+    // Il numero di Frobenius e' il massimo valore meno a
     mp_sub_d(&max_val, a_val, result);
     
     // Pulizia con gestione degli errori
@@ -516,15 +516,15 @@ int dp_algorithm(frobenius_context_t *ctx, mp_int *result) {
             unsigned long prev_idx = prev_i / 64;
             unsigned long prev_bit = prev_i % 64;
             
-            // Verifica se il bit precedente è settato
+            // Verifica se il bit precedente e' settato
             if (reachable[prev_idx] & (1ULL << prev_bit)) {
-                // Se sì, setta il bit corrente
+                // Se si', setta il bit corrente
                 reachable[idx] |= (1ULL << bit);
             }
         }
     }
     
-    // Trova il valore più grande non raggiungibile
+    // Trova il valore piu' grande non raggiungibile
     long max_unreachable = -1;
     
     // Ottimizzazione: scansione dall'alto verso il basso per trovare il primo bit non settato
@@ -636,7 +636,7 @@ int frobenius_solve_general(frobenius_context_t *ctx) {
         return status;
     }
     
-    // Fallback a Round-Robin per casi più grandi
+    // Fallback a Round-Robin per casi piu' grandi
     log_message(ctx, "Fallback a Round-Robin per valori grandi");
     int status = round_robin_algorithm(ctx, &ctx->result);
     if (status == MP_OKAY) {
@@ -679,7 +679,7 @@ int frobenius_solve(frobenius_context_t *ctx, mp_int *coins, int n) {
     // Risolvi il problema con l'algoritmo appropriato
     int status = frobenius_solve_general(ctx);
     
-    // Imposta il flag di cache se la soluzione è andata a buon fine
+    // Imposta il flag di cache se la soluzione e' andata a buon fine
     if (status == MP_OKAY) {
         ctx->cached = 1;
     }
@@ -898,7 +898,7 @@ int main(int argc, char *argv[]) {
     int mcnugget_case[] = {6, 9, 20};
     test_case(mcnugget_case, 3, "McNugget number [6, 9, 20]", verbose);
     
-    // Test con numeri più grandi
+    // Test con numeri piu' grandi
     int large_case[] = {101, 103, 109, 127};
     test_case(large_case, 4, "Caso con numeri primi [101, 103, 109, 127]", verbose);
     

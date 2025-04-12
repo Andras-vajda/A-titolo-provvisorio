@@ -1,15 +1,16 @@
 """
 Frobenius_solver.py
-================================================================================
-Implementazione del solutore per il problema di Frobenius in Python con NumPy/SymPy
-================================================================================
+=========================================================
+Implementazione del solutore per il problema di Frobenius 
+in Python con NumPy/SymPy
+=========================================================
 
 @author: M.A.W. 1968
 @version: 1.2.0
 @date: 2025-04-12
 
 METRICHE DI COMPLESSITA'
-================================================================================
+=========================================================
 Function Points:
 Input................................: 3 FP
 Output...............................: 2 FP
@@ -46,14 +47,14 @@ Lunghezza (N).......................: 2003
 Volume (V)..........................: 15,297
 Difficolta (D)......................: 124.65
 Sforzo (E)..........................: 1,906,777
-Tempo richiesto (T).................: 105,932 secondi (~29.4 ore)
+Tempo richiesto (T).................: ~29.4 h/man
 Bug stimati.........................: 5.10
 
 Metriche di Manutenibilita:
 Linee di codice (LOC)...............: 567
 Linee di commento...................: 42
 Rapporto commento/codice............: 0.074
-Indice di manutenibilita............: 72.28 (scala 0-100)
+Indice di manutenibilita............: 72.28 [0,100]
 
 Metriche specifiche Python:
 Complessita cognitiva...............: 174
@@ -76,20 +77,15 @@ Overhead di comunicazione...........: Basso
 Efficienza di parallelizzazione.....: 78%
 Speedup potenziale (8 core).........: 4.7x
 
-Profiling:
-Funzione piu intensiva..............: `_frobenius_dp` (42%)
-Secondo piu intensivo...............: `_round_robin` (27%)
-Funzione con maggiori allocazioni...: `case_n3_with_residue_classes`
-Hotspot di ottimizzazione...........: Loop innestati in `_frobenius_dp`
-
 NOTA SULL'IMPLEMENTAZIONE:
-Questa implementazione utilizza NumPy e SymPy per calcoli efficienti e multiprocessing
-per sfruttare risorse multi-core. Gli algoritmi implementati sono:
+Questa implementazione utilizza NumPy e SymPy per 
+calcoli efficienti e multiprocessing per sfruttare 
+risorse multi-core. Gli algoritmi implementati sono:
 1. Round-Robin (per n <= 4)
 2. DP con bitset NumPy (per n > 4)
 3. Approccio simbolico (per casi speciali)
 4. Algoritmo specializzato per n=3
-================================================================================
+=========================================================
 """
 
 import numpy as np
@@ -115,7 +111,8 @@ class FrobeniusSolver:
         self.verbose = verbose
         self.cache = {}  # Memoizzazione dei risultati
         self.use_mp = use_mp
-        self.num_processes = min(multiprocessing.cpu_count(), 8)  # Limita a max 8 processi
+        # Limita a max 8 processi
+        self.num_processes = min(multiprocessing.cpu_count(), 8)  
         self.stats = {
             "cache_hits": 0,
             "round_robin_calls": 0,
@@ -134,7 +131,8 @@ class FrobeniusSolver:
         if not numbers:
             return 0
         
-        # Ottimizzazione: ordina i numeri in ordine crescente per un calcolo più efficiente
+        # Ottimizzazione: ordina i numeri in ordine crescente per un 
+        # calcolo maggiormente efficiente
         numbers = sorted(numbers)
         
         result = numbers[0]
@@ -572,12 +570,12 @@ def run_tests(solver: FrobeniusSolver) -> None:
         try:
             result = solver.solve(list(coins))
             if result == expected:
-                print(f"Test {coins} -> {result} ✓")
+                print(f"Test {coins} -> {result} OK")
             else:
-                print(f"Test {coins} FALLITO: atteso {expected}, ottenuto {result} ✗")
+                print(f"Test {coins} FALLITO: atteso {expected}, ottenuto {result} FAIL")
                 all_passed = False
         except Exception as e:
-            print(f"Test {coins} FALLITO con errore: {e} ✗")
+            print(f"Test {coins} FALLITO con errore: {e} FAIL")
             all_passed = False
     
     if all_passed:
