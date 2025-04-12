@@ -17,7 +17,6 @@ Il repository contiene le seguenti implementazioni:
 1. **C con LibTomMath** (`Frobenius_ltm.c`): Implementazione in C utilizzando la libreria LibTomMath per la gestione di numeri di precisione arbitraria.
 2. **Rust** (`Frobenius_num.rs`): Implementazione in Rust con supporto multithreading e utilizzo di `num-bigint` per numeri di grandi dimensioni.
 3. **Python** (`Frobenius_solver.py`): Implementazione in Python utilizzando NumPy e SymPy per approcci sia numerici che simbolici.
-4. **LaTeX** (`Frobenius.tex`): Documento LaTeX che descrive il problema, la sua storia e l'analisi degli algoritmi.
 
 ## Requisiti di Sistema
 
