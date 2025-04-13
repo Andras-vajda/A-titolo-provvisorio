@@ -189,5 +189,5 @@ int main(void) {
     result = frobenius_round_robin(mcnugget, 3U);
     printf("McNugget number: g(6,9,20) = %d\n", result);
     
-    return 0;
+    return EXIT_SUCCESS;
 }
