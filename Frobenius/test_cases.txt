@@ -1,0 +1,14 @@
+# Test cases for Frobenius problem implementations
+# Format: values;expected_result;description
+
+# Basic cases
+3,5;7;Classic case with two coins
+3,5,7;4;Three coins case
+6,9,20;43;McNugget problem
+
+# Special cases
+2,3;1;Small values
+7,11;60;Medium values
+11,13,15,17,19;96;Five coins case
+31,41,59,26,53;1021;Complex case with five coins
+101,103,107,109;9797;Large prime numbers
