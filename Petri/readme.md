@@ -2,7 +2,7 @@
 
 ## Description
 
-This repository contains various implementations of Petri Net simulators for 1-safe Petri Nets in multiple programming languages, supporting the theoretical and practical aspects described in the academic article "Reti di Petri: Teoria, Applicazioni, Esempi" (Petri Nets: Theory, Applications, Examples).
+This repository contains various implementations of Petri Net simulators for 1-safe Petri Nets in multiple programming languages, supporting the theoretical and practical aspects described in the article "Intrappolati nelle Reti (di Petri)".
 
 A 1-safe Petri Net is a specific type of Petri Net where each place can contain at most one token, making it particularly suitable for modeling systems with binary states. This constraint allows for efficient implementations using bitfield representations and boolean algebra operations.
 
