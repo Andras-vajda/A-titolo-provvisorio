@@ -93,6 +93,15 @@ typedef struct lotto_metrics_s {
     unsigned long cover_multiplicity_histogram[LOTTO_MAX_BLOCKS + 1U];
 } lotto_metrics_t;
 
+/*
+ * Caller preconditions: input objects remain stable during the call.
+ * Workspace, output array and output count occupy disjoint storage and
+ * do not overlap any construction data read by the operation. The output
+ * array has at least output_capacity elements. These are caller obligations,
+ * not properties established by null checks or by const-qualified pointers.
+ * On any reported error, output_blocks and *output_count are unchanged;
+ * the workspace is scratch storage and may have been modified.
+ */
 lotto_status_t lotto_develop(
     const lotto_construction_t *construction,
     lotto_block_t *output_blocks,
@@ -100,18 +109,37 @@ lotto_status_t lotto_develop(
     size_t *output_count,
     lotto_workspace_t *workspace);
 
+/*
+ * On OK, is_valid is definitive. An invalid design stops enumeration at
+ * the first uncovered target (included in targets_checked). Its extrema
+ * describe only that visited prefix: minimum_multiplicity is globally zero,
+ * but maximum_multiplicity and minimum_best_intersection need not be global.
+ * For a valid design enumeration is complete. On a reported error the
+ * validation object is unchanged. Output must not overlap input storage.
+ */
 lotto_status_t lotto_validate(
     const lotto_spec_t *spec,
     const lotto_block_t *blocks,
     size_t block_count,
     lotto_validation_t *validation);
 
+/*
+ * Enumerates every target, including for invalid designs. Returns complete
+ * coverage metrics, but does not compute minimum_best_intersection.
+ * On a reported error metrics is unchanged. Output must not overlap inputs.
+ */
 lotto_status_t lotto_measure(
     const lotto_spec_t *spec,
     const lotto_block_t *blocks,
     size_t block_count,
     lotto_metrics_t *metrics);
 
+/*
+ * Input objects remain stable during the call. The output array must be
+ * disjoint from the specification and permutation; input and output block
+ * arrays must be disjoint or exactly identical (in-place relabelling).
+ * Partially overlapping arrays are not supported.
+ */
 lotto_status_t lotto_relabel(
     const lotto_spec_t *spec,
     const lotto_block_t *input_blocks,
