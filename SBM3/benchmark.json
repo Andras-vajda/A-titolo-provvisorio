@@ -1,0 +1,35 @@
+{
+  "cached": {
+    "n": 7,
+    "runs_cpu_seconds": [
+      0.076849,
+      0.075134,
+      0.075014,
+      0.076549,
+      0.074914
+    ],
+    "median_cpu_seconds": 0.075134,
+    "candidates": 22481940
+  },
+  "reference": {
+    "n": 7,
+    "runs_cpu_seconds": [
+      0.500866,
+      0.526529,
+      0.502585,
+      0.488129,
+      0.498047
+    ],
+    "median_cpu_seconds": 0.500866,
+    "candidates": 22481940
+  },
+  "cached_n8": {
+    "visited": "3872894697",
+    "bases_counted": "703297",
+    "matrices_counted": "24046189440",
+    "simple_bases_counted": "505505",
+    "simple_matrices_counted": "20381961600",
+    "cpu_seconds": "12.564803"
+  },
+  "speedup_n7": 6.666302872201666
+}

@@ -1,0 +1,11 @@
+status=complete
+n=8
+engine=cached
+patterns=56
+expected_candidates=3872894697
+visited=3872894697
+bases_counted=703297
+matrices_counted=24046189440
+simple_bases_counted=505505
+simple_matrices_counted=20381961600
+cpu_seconds=12.564803
