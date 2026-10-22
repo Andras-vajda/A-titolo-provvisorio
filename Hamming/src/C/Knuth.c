@@ -4,22 +4,7 @@
 /* Knuth.c - Optimal algorithms for k-subset generation               */
 /*                                                                    */
 /**********************************************************************/
-/* CODE METRICS:                                                      */
-/* Size metrics:                                                      */
-/*   - Lines of Code (LOC): 221                                       */
-/*   - Logical Lines of Code (LLOC): 169                              */
-/*   - Comment Lines: 52                                              */
-/*   - Comment-to-Code Ratio: 0.31                                    */
-/* Complexity metrics:                                                */
-/*   - Cyclomatic Complexity: 34                                      */
-/*   - McCabe's Essential Complexity: 28                              */
-/*   - Maximum Nesting Level: 2                                       */
-/*   - Maintainability Index: 61 (Moderate)                           */
-/* Halstead metrics:                                                  */
-/*   - Program Volume (V): 4,421                                      */
-/*   - Program Difficulty (D): 41.3                                   */
-/*   - Development Time Estimate: 10.14 hours                         */
-/**********************************************************************/
+/*          (c) 1990-2026 M.A.W. 1968 - CC BY-NC-SA / MIT             */
 /* TECHGLISH: This file implements three different algorithms from    */
 /* Donald Knuth's "The Art of Computer Programming" for generating    */
 /* all k-subsets of an n-set: Algorithm T (lexicographic order),      */
@@ -37,6 +22,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <inttypes.h>
+#include <errno.h>
+
+// Parse an unsigned decimal size without accepting overflow or trailing text.
+static int parse_size(const char *text, size_t *value) {
+    char *end;
+    uintmax_t parsed;
+    if (*text == '\0') return 0;
+    for (const char *p = text; *p; ++p)
+        if (*p < '0' || *p > '9') return 0;
+    errno = 0;
+    parsed = strtoumax(text, &end, 10);
+    if (errno == ERANGE || *end != '\0' || parsed > SIZE_MAX) return 0;
+    *value = (size_t)parsed;
+    return 1;
+}
+
 
 #define ENABLE_OUTPUT
 /* Limite arbitrario, anche per evitare attese con tempi geologici */
@@ -59,7 +61,7 @@
 int *S;
 
 /* Totalizzatore k-sottoinsiemi generati - binomiale(n,k) */
-size_t TotalSet;
+uint64_t TotalSet;
 
 /******************* OUTPUT FUNCTION ****************************/
 /* TECHGLISH: Displays the current subset in a human-readable   */
@@ -77,13 +79,13 @@ size_t TotalSet;
 void printSubset(size_t k)
 {
 #ifdef ENABLE_OUTPUT
-    static size_t cnt = 0;
-    printf("%5zu {%d, ", TotalSet++, S[0]);
+    printf("%5" PRIu64 " {%d, ", TotalSet++, S[0]);
     for (size_t i = 1; i < k -1; ++i) {
         printf("%d, ", S[i]);
     }
     printf("%d}\n", S[k -1]);
 #else
+    (void)k;
     TotalSet++;
 #endif
 }
@@ -103,9 +105,9 @@ void printSubset(size_t k)
 void T_ksubsetLex(const size_t k, const size_t n) {
     int j, x;
 
-init:
+/* init */
     // Initialize S[0...k-1] with the first k integers
-    for (j = 0; j < k; j++) {
+    for (j = 0; j < (int)k; j++) {
         S[j] = j;
     }
 
@@ -144,9 +146,9 @@ find_j:
         goto find_j;
     }
 
-done:
+/* done */
     // Check if we've generated all subsets
-    if (j > k) {
+    if (j > (int)k) {
         return;
     }
 
@@ -174,9 +176,9 @@ increment:
 void R_ksubsetRD(const size_t k, const size_t n) {
     int j;
 
-init:
+/* init */
     // Initialize with the first subset: {0, 1, ..., k-1}
-    for (j = 0; j < k; j++) {
+    for (j = 0; j < (int)k; j++) {
         S[j] = j;
     }
 
@@ -186,7 +188,7 @@ visit:
     // Output the current subset
     printSubset(k);
 
-easy:
+/* easy */
     // Determine direction based on parity of k
     if (k & 1) {
         // Odd k: try to increase S[0]
@@ -231,7 +233,7 @@ increase:
     }
     else {
         j++;
-        if (j <= k) goto decrease;
+        if (j <= (int)k) goto decrease;
     }
 }
 
@@ -250,14 +252,17 @@ increase:
 /* prestazioni per universi di piccole dimensioni.              */
 /****************************************************************/
 
+// Contract: 3 <= k <= MAX_K, k < n <= 64; S has k+3 entries.
 void G_ksubsetGosper(const size_t k, const size_t n) {
     // Initialize with first k-subset: binary representation 00...0011...11 (k ones)
     uint64_t x = (1ULL << k) - 1;
-    uint64_t limit = 1ULL << n;
+    // Stop at the last mask; no shift by n, including when n == 64.
+    uint64_t last = x << (n - k);
     
-    while (x < limit) {
+    for (;;) {
         /* Convert bit representation to integer array for output */
-        size_t j = 0, mask = 1;
+        size_t j = 0;
+        uint64_t mask = UINT64_C(1);
         for (size_t i = 0; i < n; ++i) {
             if (x & mask) {
                 S[j++] = i;
@@ -266,6 +271,8 @@ void G_ksubsetGosper(const size_t k, const size_t n) {
         }
         printSubset(k);
         
+        if (x == last) break;
+
         /* Generate the next k-subset using Gosper's hack */
         uint64_t u = x & -x;           // Isolate rightmost 1-bit
         uint64_t v = x + u;            // Turn off rightmost 1-bit and propagate carry
@@ -294,8 +301,14 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
-    k = (size_t)atoi(argv[1]);
-    n = (size_t)atoi(argv[2]);
+    if (!parse_size(argv[1], &k) || !parse_size(argv[2], &n)) {
+        fputs("Errore: servono due interi decimali non negativi.\n", stderr);
+        return EXIT_FAILURE;
+    }
+    if (n > 64) {
+        fputs("Questa dimostrazione con Gosper richiede n <= 64.\n", stderr);
+        return EXIT_FAILURE;
+    }
 
     // Controllo valore minimo di k
     if (k < 3) {
@@ -306,12 +319,12 @@ int main(int argc, char* argv[]) {
 
     // Controllo valore massimo di k (mera programmazione difensiva)
     if (k > MAX_K) {
-        fprintf(stderr, "k deve essere minore di %u per questa implementazione.\n", MAX_K);
+        fprintf(stderr, "k deve essere minore o uguale a %u per questa implementazione.\n", MAX_K);
         return EXIT_FAILURE;
     }
 
     if (k >= n) {
-        fprintf(stderr, "Non esistono %zu-sottoinsiemi di un insieme di cardinalita' %zu.\n", k, n);
+        fprintf(stderr, "Questa implementazione richiede k < n (ricevuti k=%zu, n=%zu).\n", k, n);
         fprintf(stderr, "Uso: %s k n, con k < n\n", argv[0]);
         return EXIT_FAILURE;
     }
@@ -324,22 +337,22 @@ int main(int argc, char* argv[]) {
     }
 
     // Run Algorithm T (lexicographic order)
-    printf("T_ksubsetLex(%d, %d) per ordine lex:\n", k, n);
+    printf("T_ksubsetLex(%zu, %zu) per ordine colex (lex con indici decrescenti):\n", k, n);
     TotalSet = 0;
     T_ksubsetLex(k, n);
-    printf("%zu subset generati\n", TotalSet);
+    printf("%" PRIu64 " subset generati\n", TotalSet);
 
     // Run Algorithm R (revdoor/Gray code order)
-    printf("\nR_ksubsetRD(%d, %d) per ordine revdoor (Gray):\n", k, n);
+    printf("\nR_ksubsetRD(%zu, %zu) per ordine revdoor (Gray):\n", k, n);
     TotalSet = 0;
     R_ksubsetRD(k, n);
-    printf("%zu subset generati\n", TotalSet);
+    printf("%" PRIu64 " subset generati\n", TotalSet);
 
     // Run Gosper's algorithm
-    printf("\nG_ksubsetGosper(%d, %d):\n", k, n);
+    printf("\nG_ksubsetGosper(%zu, %zu):\n", k, n);
     TotalSet = 0;
     G_ksubsetGosper(k, n);
-    printf("%zu subset generati\n", TotalSet);
+    printf("%" PRIu64 " subset generati\n", TotalSet);
     
     free(S);
 

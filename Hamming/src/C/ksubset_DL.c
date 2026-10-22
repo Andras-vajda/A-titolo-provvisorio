@@ -4,21 +4,7 @@
 /* ksubset_DL.c - Unit Hamming distance subset generator              */
 /*                                                                    */
 /**********************************************************************/
-/* CODE METRICS:                                                      */
-/* Size metrics:                                                      */
-/*   - Lines of Code (LOC): 89                                        */
-/*   - Logical Lines of Code (LLOC): 64                               */
-/*   - Comment Lines: 25                                              */
-/*   - Comment-to-Code Ratio: 0.39                                    */
-/* Complexity metrics:                                                */
-/*   - Cyclomatic Complexity: 9                                       */
-/*   - Maximum Nesting Level: 3                                       */
-/*   - Maintainability Index: 85 (Excellent)                          */
-/* Halstead metrics:                                                  */
-/*   - Program Volume (V): 1,843                                      */
-/*   - Program Difficulty (D): 22.6                                   */
-/*   - Development Time Estimate: 2.31 hours                          */
-/**********************************************************************/
+/*          (c) 1990-2026 M.A.W. 1968 - CC BY-NC-SA / MIT             */
 /* TECHGLISH: This implementation generates all k-subsets that are at */
 /* Hamming semi-distance 1 from a reference subset. These are subsets */
 /* that differ from the base subset by exactly one element - one      */
@@ -37,6 +23,24 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stddef.h>
+#include <stdlib.h>
+#include <inttypes.h>
+#include <errno.h>
+
+// Parse an unsigned decimal size without accepting overflow or trailing text.
+static int parse_size(const char *text, size_t *value) {
+    char *end;
+    uintmax_t parsed;
+    if (*text == '\0') return 0;
+    for (const char *p = text; *p; ++p)
+        if (*p < '0' || *p > '9') return 0;
+    errno = 0;
+    parsed = strtoumax(text, &end, 10);
+    if (errno == ERANGE || *end != '\0' || parsed > SIZE_MAX) return 0;
+    *value = (size_t)parsed;
+    return 1;
+}
+
 
 /******************* CONSTANTS ***********************************/
 /* TECHGLISH: The maximum universe size is limited by the number */
@@ -149,8 +153,11 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    size_t k = (size_t)atoi(argv[1]);
-    size_t n = (size_t)atoi(argv[2]);
+    size_t k, n;
+    if (!parse_size(argv[1], &k) || !parse_size(argv[2], &n)) {
+        fputs("Errore: servono due interi decimali non negativi.\n", stderr);
+        return EXIT_FAILURE;
+    }
 
     // Convalida dei parametri
     if (k < 3) {

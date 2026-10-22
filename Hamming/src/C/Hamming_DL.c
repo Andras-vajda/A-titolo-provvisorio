@@ -4,21 +4,7 @@
 /* Hamming_DL.c - K-subset generation by Hamming distance             */
 /*                                                                    */
 /**********************************************************************/
-/* CODE METRICS:                                                      */
-/* Size metrics:                                                      */
-/*   - Lines of Code (LOC): 196                                       */
-/*   - Logical Lines of Code (LLOC): 142                              */
-/*   - Comment Lines: 54                                              */
-/*   - Comment-to-Code Ratio: 0.38                                    */
-/* Complexity metrics:                                                */
-/*   - Cyclomatic Complexity: 18                                      */
-/*   - Maximum Nesting Level: 3                                       */
-/*   - Maintainability Index: 74 (Good)                               */
-/* Halstead metrics:                                                  */
-/*   - Program Volume (V): 3,856                                      */
-/*   - Program Difficulty (D): 35.2                                   */
-/*   - Development Time Estimate: 7.54 hours                          */
-/**********************************************************************/
+/*          (c) 1990-2026 M.A.W. 1968 - CC BY-NC-SA / MIT             */
 /* TECHGLISH: This implementation generates k-subsets of n-sets,      */
 /* classified by their Hamming distance from a reference subset.      */
 /* The algorithm uses bitwise operations for optimal performance,     */
@@ -40,6 +26,23 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <inttypes.h>
+#include <errno.h>
+
+// Parse an unsigned decimal size without accepting overflow or trailing text.
+static int parse_size(const char *text, size_t *value) {
+    char *end;
+    uintmax_t parsed;
+    if (*text == '\0') return 0;
+    for (const char *p = text; *p; ++p)
+        if (*p < '0' || *p > '9') return 0;
+    errno = 0;
+    parsed = strtoumax(text, &end, 10);
+    if (errno == ERANGE || *end != '\0' || parsed > SIZE_MAX) return 0;
+    *value = (size_t)parsed;
+    return 1;
+}
+
 
 /******************* TYPES AND CONSTANTS *************************/
 /* TECHGLISH: We represent sets as bit vectors using a 32-bit    */
@@ -74,7 +77,7 @@ size_t counter = 0;
 /*****************************************************************/
 
 // Una comoda macro per la stampa dei subset
-#define HAS_MORE_BITS(value, i) ((value) & ~((1U << ((i) + 1)) - 1))
+#define HAS_MORE_BITS(value, i) ((value) & ~((UINT32_C(1) << ((i) + 1)) - 1))
 
 /******************* OUTPUT FORMATTING FUNCTIONS *****************/
 /* TECHGLISH: Functions to display subsets in human-readable     */
@@ -92,10 +95,11 @@ size_t counter = 0;
 // Funzione per la stampa di un sottoinsieme
 void print_set(Set_t value, size_t n) {
     printf(" {");
-    for (char i = 0; i < n; ++i) {
-        if (value & (1 << i)) {
+    for (size_t i = 0; i < n; ++i) {
+        if (value & (UINT32_C(1) << i)) {
             // Converte la posizione in carattere (a, b, c, ...)
-            printf("%c", 'a' + i); 
+            if (n <= 26) printf("%c", (int)('a' + i));
+            else printf("u%zu", i); 
             if (i < n - 1 && HAS_MORE_BITS(value, i)) {
                 // Aggiunge la virgola solo se ci sono altri elementi
                 printf(", "); 
@@ -110,12 +114,12 @@ void print_binary(Set_t value, size_t n, size_t d, bool prefix) {
     Set_t v = value;
     // Informazioni aggiuntive sul subset nella classe di distanza
     if (prefix) {
-        printf("%4zu [%zu]: (%06X) ", counter, d, value);
+        printf("%4zu [%zu]: (%06" PRIX32 ") ", counter, d, value);
     }
     
     // Stampa il vettore booleano caratteristico
     for (size_t i = n; i > 0; --i) {
-        printf("%c", (value & (1 << (i - 1))) ? '1' : '0');
+        printf("%c", (value & (UINT32_C(1) << (i - 1))) ? '1' : '0');
     }
     
     // Arricchisce l'output con una stampa del subset in formato simbolico
@@ -125,12 +129,12 @@ void print_binary(Set_t value, size_t n, size_t d, bool prefix) {
 
 /******************* SUBSET GENERATION ALGORITHM ******************/
 /* TECHGLISH: Gosper's algorithm for generating the next k-subset */
-/* in lexicographic order. This elegant bit manipulation algorithm*/
+/* in increasing numeric (colex) order. This elegant bit manipulation algorithm*/
 /* directly computes the successor without iteration, providing   */
 /* optimal performance for combinatorial generation.              */
 /*                                                                */
 /* NERDYTALIAN: Algoritmo di Gosper per generare il prossimo      */
-/* k-sottoinsieme in ordine lessicografico. Questo elegante       */
+/* k-sottoinsieme in ordine numerico crescente (colex). Questo elegante       */
 /* algoritmo di manipolazione dei bit calcola direttamente il     */
 /* successore senza iterazione, fornendo prestazioni ottimali     */
 /* per la generazione combinatoria.                               */
@@ -147,20 +151,20 @@ Set_t next_subset(Set_t subset, Set_t limit) {
     // Identifica i bit cambiati    
     Set_t ones = subset ^ ripple;         
     // Riposiziona i bit a 1    
-    ones = (ones >> 2) / smallest;        
+    ones = (ones / smallest) >> 2;        
     // Ricombina il risultato con un OR   
     return ripple | ones;                 
 }
 
 /******************* HAMMING DISTANCE GENERATION ******************/
 /* TECHGLISH: This core function generates all k-subsets at a     */
-/* specific Hamming distance d from a reference subset. The       */
+/* specific Johnson distance d from a reference subset. The       */
 /* algorithm works by systematically removing d elements from     */
 /* the base subset and adding d new elements, exploring all       */
 /* possible combinations of additions and removals.               */
 /*                                                                */
 /* NERDYTALIAN: Questa funzione fondamentale genera tutti i       */
-/* k-sottoinsiemi a una distanza di Hamming d specifica da un     */
+/* k-sottoinsiemi a una semidistanza di Hamming d specifica da un     */
 /* sottoinsieme di riferimento. L'algoritmo funziona rimuovendo   */
 /* sistematicamente d elementi dal sottoinsieme base e aggiungendo*/
 /* d nuovi elementi, esplorando tutte le possibili combinazioni   */
@@ -169,28 +173,27 @@ Set_t next_subset(Set_t subset, Set_t limit) {
 
 // Funzione per generare k-subset a distanza desiderata
 void generate_k_subset(size_t n, size_t k, size_t d) {
+    // Preconditions of this 32-bit implementation, before any shift.
+    if (k < 2 || k > MAX_N / 2 || n < 2 * k || n > MAX_N || d > k) {
+        fputs("Parametri non validi per generate_k_subset.\n", stderr);
+        exit(EXIT_FAILURE);
+    }
     // Crea base: subset = {0,1,...,k-1}    
-    Set_t base_set = (1 << k) - 1;        
-    // Set differenza (complemento)    
-    Set_t diff_set = (1 << (n - k)) - 1;  
+    Set_t base_set = (UINT32_C(1) << k) - 1;        
     // Maschera iniziale per d bit    
-    Set_t base_mask = (1 << d) - 1;       
+    Set_t base_mask = (UINT32_C(1) << d) - 1;       
 
     if (d == 0) {
-        counter = 0;
+        counter = 1; // Count the reference subset as well.
         printf("** Base set: ");
         print_binary(base_set, n, d, false);
         return;
     }
 
-    if (d > k) {
-        printf("Distanza non valida: d deve essere <= k.\n");
-        return;
-    }
 
-    while (base_mask < (1 << k)) {
-        Set_t diff_mask = (1 << d) - 1;
-        while (diff_mask < (1 << (n - k))) {
+    while (base_mask < (UINT32_C(1) << k)) {
+        Set_t diff_mask = (UINT32_C(1) << d) - 1;
+        while (diff_mask < (UINT32_C(1) << (n - k))) {
             // Rimuovi d elementi
             Set_t modified_base = base_set & ~base_mask;  
             // Aggiungi d nuovi elementi
@@ -200,14 +203,14 @@ void generate_k_subset(size_t n, size_t k, size_t d) {
             ++counter;            
             print_binary(result, n, d, true);
             // Prossima maschera
-            diff_mask = next_subset(diff_mask, (1 << (n - k))); 
+            diff_mask = next_subset(diff_mask, (UINT32_C(1) << (n - k))); 
             if (counter == SIZE_MAX) {
                 fprintf(stderr, "Errore: raggiunto il limite massimo di conteggio. Terminazione.\n");
                 exit(EXIT_FAILURE);
             }
         }
         // Prossima combinazione di bit da rimuovere
-        base_mask = next_subset(base_mask, (1 << k)); 
+        base_mask = next_subset(base_mask, (UINT32_C(1) << k)); 
     }
 }
 
@@ -218,8 +221,8 @@ void generate_k_subset(size_t n, size_t k, size_t d) {
 /* the combinatorial space partitioned by Hamming distance.      */
 /*                                                               */
 /* NERDYTALIAN: Genera i k-sottoinsiemi a tutte le possibili     */
-/* distanze di Hamming dal sottoinsieme di riferimento,          */
-/* organizzandoli per distanza crescente. Ciò consente una       */
+/* semidistanze di Hamming dal sottoinsieme di riferimento,          */
+/* organizzandoli per distanza crescente. CiÃ² consente una       */
 /* visione completa dello spazio combinatorio partizionato       */
 /* dalla distanza di Hamming.                                    */
 /*****************************************************************/
@@ -253,19 +256,21 @@ int main(int argc, char *argv[]) {
     // Verifica degli argomenti da riga di comando
     if (argc != 3) {
         fprintf(stderr, "** Uso: %s n k\n"
-                "** k > 2 e 2k <= n <= %d.\n", 
+                "** k >= 2 e 2k <= n <= %d.\n", 
                 argv[0], MAX_N);
         return EXIT_FAILURE;
     } 
         
-    n = (size_t)atoi(argv[1]);
-    k = (size_t)atoi(argv[2]);
+    if (!parse_size(argv[1], &n) || !parse_size(argv[2], &k)) {
+        fputs("Errore: servono due interi decimali non negativi.\n", stderr);
+        return EXIT_FAILURE;
+    }
     
     srand((unsigned int)time(NULL));
     
     // Validazione dei parametri
-    if (k < 2 || n < 2 * k || n > MAX_N) {
-        fprintf(stderr, "Errore: Assicurati che 2 < k e 2k <= n <= %d.\n", MAX_N);
+    if (k < 2 || k > MAX_N / 2 || n < 2 * k || n > MAX_N) {
+        fprintf(stderr, "Errore: Assicurati che 2 <= k e 2k <= n <= %d.\n", MAX_N);
         return EXIT_FAILURE;
     }
     
@@ -277,7 +282,7 @@ int main(int argc, char *argv[]) {
 
     // FASE 2: Generazione completa per ogni distanza
     printf("\n** FASE 2: Generazione esaustiva dei %zu-subset\n"
-           "**         ordinati per distanza di Hamming crescente:\n", k);
+           "**         ordinati per semidistanza di Hamming crescente:\n", k);
     generate_all_subsets(n, k);
     printf("\n** Subset generati: %zu\n\n", counter);
 
