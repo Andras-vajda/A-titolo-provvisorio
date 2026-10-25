@@ -99,29 +99,29 @@ void print_set(Set_t value, size_t n) {
         if (value & (UINT32_C(1) << i)) {
             // Converte la posizione in carattere (a, b, c, ...)
             if (n <= 26) printf("%c", (int)('a' + i));
-            else printf("u%zu", i); 
+            else printf("u%zu", i);
             if (i < n - 1 && HAS_MORE_BITS(value, i)) {
                 // Aggiunge la virgola solo se ci sono altri elementi
-                printf(", "); 
+                printf(", ");
             }
         }
     }
     printf("}");
 }
 
-// Stampa il vettore caratteristico in hex e binario 
+// Stampa il vettore caratteristico in hex e binario
 void print_binary(Set_t value, size_t n, size_t d, bool prefix) {
     Set_t v = value;
     // Informazioni aggiuntive sul subset nella classe di distanza
     if (prefix) {
         printf("%4zu [%zu]: (%06" PRIX32 ") ", counter, d, value);
     }
-    
+
     // Stampa il vettore booleano caratteristico
     for (size_t i = n; i > 0; --i) {
         printf("%c", (value & (UINT32_C(1) << (i - 1))) ? '1' : '0');
     }
-    
+
     // Arricchisce l'output con una stampa del subset in formato simbolico
     print_set(v, n);
     puts("");
@@ -129,15 +129,16 @@ void print_binary(Set_t value, size_t n, size_t d, bool prefix) {
 
 /******************* SUBSET GENERATION ALGORITHM ******************/
 /* TECHGLISH: Gosper's algorithm for generating the next k-subset */
-/* in increasing numeric (colex) order. This elegant bit manipulation algorithm*/
-/* directly computes the successor without iteration, providing   */
-/* optimal performance for combinatorial generation.              */
+/* in increasing numeric (colex) order.                           */
+/* This elegant bit manipulation algorithm directly computes the  */
+/* successor without iteration, providing optimal performance for */
+/* combinatorial generation.                                      */
 /*                                                                */
 /* NERDYTALIAN: Algoritmo di Gosper per generare il prossimo      */
-/* k-sottoinsieme in ordine numerico crescente (colex). Questo elegante       */
-/* algoritmo di manipolazione dei bit calcola direttamente il     */
-/* successore senza iterazione, fornendo prestazioni ottimali     */
-/* per la generazione combinatoria.                               */
+/* k-sottoinsieme in ordine numerico crescente (colex).           */
+/* Questo elegante algoritmo di manipolazione dei bit calcola     */
+/* direttamente il successore senza iterazione, garantendo        */
+/* prestazioni ottimali per la generazione combinatoria.          */
 /******************************************************************/
 
 // Genera il successore del subset corrente
@@ -145,15 +146,15 @@ Set_t next_subset(Set_t subset, Set_t limit) {
     if (subset == 0 || subset >= limit)
         return limit;
     // Isola il bit piu' a destra (LSB)
-    Set_t smallest = subset & -subset;    
-    // Propaga il riporto    
-    Set_t ripple = subset + smallest;     
-    // Identifica i bit cambiati    
-    Set_t ones = subset ^ ripple;         
-    // Riposiziona i bit a 1    
-    ones = (ones / smallest) >> 2;        
-    // Ricombina il risultato con un OR   
-    return ripple | ones;                 
+    Set_t smallest = subset & -subset;
+    // Propaga il riporto
+    Set_t ripple = subset + smallest;
+    // Identifica i bit cambiati
+    Set_t ones = subset ^ ripple;
+    // Riposiziona i bit a 1
+    ones = (ones / smallest) >> 2;
+    // Ricombina il risultato con un OR
+    return ripple | ones;
 }
 
 /******************* HAMMING DISTANCE GENERATION ******************/
@@ -162,13 +163,19 @@ Set_t next_subset(Set_t subset, Set_t limit) {
 /* algorithm works by systematically removing d elements from     */
 /* the base subset and adding d new elements, exploring all       */
 /* possible combinations of additions and removals.               */
+/* Counter protocol: d=0 resets the global counter to 1; d>0      */
+/* accumulates. A full count requires fixed n,k and d=0,...,k,     */
+/* each called once, starting with d=0.                           */
 /*                                                                */
 /* NERDYTALIAN: Questa funzione fondamentale genera tutti i       */
-/* k-sottoinsiemi a una semidistanza di Hamming d specifica da un     */
+/* k-sottoinsiemi a una semidistanza di Hamming d specifica da un */
 /* sottoinsieme di riferimento. L'algoritmo funziona rimuovendo   */
 /* sistematicamente d elementi dal sottoinsieme base e aggiungendo*/
 /* d nuovi elementi, esplorando tutte le possibili combinazioni   */
 /* di aggiunte e rimozioni.                                       */
+/* Protocollo: d=0 reinizializza il contatore globale a 1; d>0    */
+/* accumula. Il totale richiede n,k fissi e d=0,...,k, una sola   */
+/* chiamata per classe, iniziando da d=0.                         */
 /******************************************************************/
 
 // Funzione per generare k-subset a distanza desiderata
@@ -178,10 +185,10 @@ void generate_k_subset(size_t n, size_t k, size_t d) {
         fputs("Parametri non validi per generate_k_subset.\n", stderr);
         exit(EXIT_FAILURE);
     }
-    // Crea base: subset = {0,1,...,k-1}    
-    Set_t base_set = (UINT32_C(1) << k) - 1;        
-    // Maschera iniziale per d bit    
-    Set_t base_mask = (UINT32_C(1) << d) - 1;       
+    // Crea base: subset = {0,1,...,k-1}
+    Set_t base_set = (UINT32_C(1) << k) - 1;
+    // Maschera iniziale per d bit
+    Set_t base_mask = (UINT32_C(1) << d) - 1;
 
     if (d == 0) {
         counter = 1; // Count the reference subset as well.
@@ -195,22 +202,23 @@ void generate_k_subset(size_t n, size_t k, size_t d) {
         Set_t diff_mask = (UINT32_C(1) << d) - 1;
         while (diff_mask < (UINT32_C(1) << (n - k))) {
             // Rimuovi d elementi
-            Set_t modified_base = base_set & ~base_mask;  
+            Set_t modified_base = base_set & ~base_mask;
             // Aggiungi d nuovi elementi
-            Set_t shifted_diff = diff_mask << k;   
-            // Ricombina i valori con OR       
-            Set_t result = modified_base | shifted_diff;  
-            ++counter;            
+            Set_t shifted_diff = diff_mask << k;
+            // Ricombina i valori con OR
+            Set_t result = modified_base | shifted_diff;
+            ++counter;
             print_binary(result, n, d, true);
             // Prossima maschera
-            diff_mask = next_subset(diff_mask, (UINT32_C(1) << (n - k))); 
+            diff_mask = next_subset(diff_mask, (UINT32_C(1) << (n - k)));
             if (counter == SIZE_MAX) {
-                fprintf(stderr, "Errore: raggiunto il limite massimo di conteggio. Terminazione.\n");
+                fprintf(stderr, "Errore: raggiunto il limite massimo "
+                        "di conteggio. Terminazione.\n");
                 exit(EXIT_FAILURE);
             }
         }
         // Prossima combinazione di bit da rimuovere
-        base_mask = next_subset(base_mask, (UINT32_C(1) << k)); 
+        base_mask = next_subset(base_mask, (UINT32_C(1) << k));
     }
 }
 
@@ -221,7 +229,7 @@ void generate_k_subset(size_t n, size_t k, size_t d) {
 /* the combinatorial space partitioned by Hamming distance.      */
 /*                                                               */
 /* NERDYTALIAN: Genera i k-sottoinsiemi a tutte le possibili     */
-/* semidistanze di Hamming dal sottoinsieme di riferimento,          */
+/* semidistanze di Hamming dal sottoinsieme di riferimento,      */
 /* organizzandoli per distanza crescente. Ciò consente una       */
 /* visione completa dello spazio combinatorio partizionato       */
 /* dalla distanza di Hamming.                                    */
@@ -252,31 +260,33 @@ void generate_all_subsets(size_t n, size_t k) {
 
 int main(int argc, char *argv[]) {
     size_t n, k, d;
-    
+
     // Verifica degli argomenti da riga di comando
     if (argc != 3) {
         fprintf(stderr, "** Uso: %s n k\n"
-                "** k >= 2 e 2k <= n <= %d.\n", 
+                "** k >= 2 e 2k <= n <= %d.\n",
                 argv[0], MAX_N);
         return EXIT_FAILURE;
-    } 
-        
+    }
+
     if (!parse_size(argv[1], &n) || !parse_size(argv[2], &k)) {
         fputs("Errore: servono due interi decimali non negativi.\n", stderr);
         return EXIT_FAILURE;
     }
-    
+
     srand((unsigned int)time(NULL));
-    
+
     // Validazione dei parametri
     if (k < 2 || k > MAX_N / 2 || n < 2 * k || n > MAX_N) {
-        fprintf(stderr, "Errore: Assicurati che 2 <= k e 2k <= n <= %d.\n", MAX_N);
+        fprintf(stderr, "Errore: Assicurati che 2 <= k e 2k <= n <= %d.\n",
+                MAX_N);
         return EXIT_FAILURE;
     }
-    
+
     // FASE 1: Generazione con distanza casuale
     d = (rand() % k) + 1;
-    printf("** FASE 1: Generazione dei %zu-subset a distanza casuale (%zu)\n", k, d);
+    printf("** FASE 1: Generazione dei %zu-subset "
+           "a distanza casuale (%zu)\n", k, d);
     generate_k_subset(n, k, 0);   // Prima il subset base
     generate_k_subset(n, k, d);   // Poi i subset a distanza d
 

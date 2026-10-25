@@ -56,7 +56,8 @@ static int parse_size(const char *text, size_t *value) {
 /*****************************************************************/
 
 #define MAX_N 64 // Massima cardinalita' dell'universo
-#define MAX_K 32 // Limite pratico per k (evita tempi di elaborazione eccessivi)
+// Limite pratico per k (evita tempi di elaborazione eccessivi)
+#define MAX_K 32
 
 /******************* OUTPUT FUNCTION *****************************/
 /* TECHGLISH: Displays a subset in human-readable format, where  */
@@ -75,7 +76,7 @@ void printSubset(uint64_t B, size_t n) {
     printf("{ ");
     for (size_t i = 0; i < n; ++i) {
         if (B & (1ULL << i)) {
-            printf("%zu ", i + 1);  // Use 1-based indexing for output
+            printf("%zu ", i + 1);  // Off-by-one in output
         }
     }
     printf("}\n");
@@ -100,7 +101,7 @@ void generateHammingDistance1(size_t k, size_t n) {
 
     // Inizializza il subset base con i primi k bit impostati a 1
     // Es. per k = 3: B = 0b111 = 7 = 2^3 -1
-    uint64_t B = (1ULL << k) - 1; 
+    uint64_t B = (1ULL << k) - 1;
 
     // Stampa il subset base per riferimento
     printf("Base subset:\n");
@@ -125,7 +126,8 @@ void generateHammingDistance1(size_t k, size_t n) {
 
             // Controllo overflow del contatore
             if (counter == SIZE_MAX) {
-                fprintf(stderr, "Errore: raggiunto il limite massimo di conteggio. Terminazione.\n");
+                fprintf(stderr, "Errore: raggiunto il limite massimo "
+                        "di conteggio. Terminazione.\n");
                 exit(EXIT_FAILURE);
             }
         }
@@ -164,19 +166,22 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Errore: k deve essere maggiore di 2.\n");
         return EXIT_FAILURE;
     }
-    
+
     if (k > MAX_K) {
-        fprintf(stderr, "Errore: k deve essere minore o uguale a %d per questa implementazione.\n", MAX_K);
+        fprintf(stderr, "Errore: k deve essere minore o uguale a %d "
+                "per questa implementazione.\n", MAX_K);
         return EXIT_FAILURE;
     }
 
     if (n < 2 * k) {
-        fprintf(stderr, "Errore: n deve essere almeno 2k (n >= %zu).\n", 2 * k);
+        fprintf(stderr, "Errore: n deve essere almeno 2k (n >= %zu).\n",
+                2 * k);
         return EXIT_FAILURE;
     }
-    
+
     if (n > MAX_N) {
-        fprintf(stderr, "Errore: n deve essere minore o uguale a %d per questa implementazione.\n", MAX_N);
+        fprintf(stderr, "Errore: n deve essere minore o uguale a %d "
+                "per questa implementazione.\n", MAX_N);
         return EXIT_FAILURE;
     }
 

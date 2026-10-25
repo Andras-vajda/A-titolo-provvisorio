@@ -7,14 +7,14 @@
 /*          (c) 1990-2026 M.A.W. 1968 - CC BY-NC-SA / MIT             */
 /* TECHGLISH: This file implements three different algorithms from    */
 /* Donald Knuth's "The Art of Computer Programming" for generating    */
-/* all k-subsets of an n-set: Algorithm T (lexicographic order),      */
+/* all k-subsets of an n-set: Algorithm T (colex on increasing tuples), */
 /* Algorithm R (minimal-change "revdoor" order), and Gosper's         */
 /* algorithm for bitwise subset generation.                           */
 /**********************************************************************/
 /* NERDYTALIAN: Questo file implementa tre diversi algoritmi dal      */
 /* "The Art of Computer Programming" di Donald Knuth per generare     */
-/* tutti i k-sottoinsiemi di un n-insieme: Algoritmo T (ordine        */
-/* lessicografico), Algoritmo R (ordine "revdoor" a minima variazione)*/
+/* tutti i k-sottoinsiemi: Algoritmo T (colex sulle tuple crescenti), */
+/* Algoritmo R (ordine "revdoor" a minima variazione)                 */
 /* e l'algoritmo di Gosper per la generazione bitwise di sottoinsiemi.*/
 /**********************************************************************/
 /**********************************************************************/
@@ -90,43 +90,29 @@ void printSubset(size_t k)
 #endif
 }
 
-/******************* ALGORITHM T: LEXICOGRAPHIC ******************/
-/* TECHGLISH: Generates k-subsets in lexicographic order, as     */
-/* described in TAOCP 7.2.1.3, Algorithm T. This algorithm       */
-/* maintains the invariant S[0] < S[1] < ... < S[k-1] and uses   */
-/* sentinel values S[k] and S[k+1] for boundary handling.        */
-/*                                                               */
-/* NERDYTALIAN: Genera k-sottoinsiemi in ordine lessicografico,  */
-/* come descritto in TAOCP 7.2.1.3, Algoritmo T. Questo algoritmo*/
-/* mantiene l'invariante S[0] < S[1] < ... < S[k-1] e utilizza   */
-/* valori sentinella S[k] e S[k+1] per la gestione dei confini.  */
-/*****************************************************************/
+/******************* ALGORITHM T: COLEX *******************/
+/* TECHGLISH: Colex order on increasing tuples. For the explanation     */
+/* and invariants, see the article and TAOCP 7.2.1.3, Algorithm T.      */
+/*                                                                      */
+/* NERDYTALIAN: Ordine colex sulle tuple crescenti. Per spiegazione     */
+/* e invarianti, si vedano il testo e TAOCP 7.2.1.3, Algoritmo T.       */
+/*************************************************************************/
 
 void T_ksubsetLex(const size_t k, const size_t n) {
     int j, x;
-
-/* init */
-    // Initialize S[0...k-1] with the first k integers
     for (j = 0; j < (int)k; j++) {
         S[j] = j;
     }
-
-    // Set up sentinel values
     j = k;
-    S[k] = n;      // Upper bound for comparisons
-    S[k+1] = 0;    // Ensures termination
+    S[k] = n;
+    S[k+1] = 0;
 
 visit:
-    // Output the current subset
     printSubset(k);
-
-    // Determine the next step based on the current state
     if (j > 0) {
         x = j;
         goto increment;
     }
-
-    // Easy case: increment S[0] if possible
     if (S[0] + 1 < S[1]) {
         S[0]++;
         goto visit;
@@ -136,62 +122,42 @@ visit:
     }
 
 find_j:
-    // Reset elements before j-1 to their minimal values
     S[j - 2] = j - 2;
     x = S[j-1] + 1;
-
-    // If we can't increment S[j-1], move to the next position
     if (x == S[j]) {
         j++;
         goto find_j;
     }
-
-/* done */
-    // Check if we've generated all subsets
     if (j > (int)k) {
         return;
     }
 
 increment:
-    // Increment S[j-1] and reset j for the next iteration
     S[j-1] = x;
     j--;
     goto visit;
 }
 
-/******************* ALGORITHM R: GRAY CODE ********************/
-/* TECHGLISH: Implements Algorithm R from TAOCP 7.2.1.3, which  */
-/* generates k-subsets in a "revdoor" order where consecutive   */
-/* subsets differ by exactly one element - a Gray code for      */
-/* combinations. The direction of change alternates based on    */
-/* the parity of k.                                             */
-/*                                                              */
-/* NERDYTALIAN: Implementa l'Algoritmo R da TAOCP 7.2.1.3, che  */
-/* genera k-sottoinsiemi in un ordine "revdoor" dove i          */
-/* sottoinsiemi consecutivi differiscono per esattamente un     */
-/* elemento - un codice Gray per le combinazioni. La direzione  */
-/* di cambiamento si alterna in base alla parita' di k.          */
-/****************************************************************/
+/******************* ALGORITHM R: REVOLVING DOOR *******************/
+/* TECHGLISH: One removal and one addition per transition               */
+/* (Hamming distance 2). For the explanation and invariants,            */
+/* see the article and TAOCP 7.2.1.3, Algorithm R.                      */
+/*                                                                      */
+/* NERDYTALIAN: Una rimozione e una aggiunta per transizione            */
+/* (distanza di Hamming 2). Per spiegazione e invarianti,               */
+/* si vedano il testo e TAOCP 7.2.1.3, Algoritmo R.                     */
+/*************************************************************************/
 
 void R_ksubsetRD(const size_t k, const size_t n) {
     int j;
-
-/* init */
-    // Initialize with the first subset: {0, 1, ..., k-1}
     for (j = 0; j < (int)k; j++) {
         S[j] = j;
     }
-
-    S[k] = n;  // Sentinel value
+    S[k] = n;
 
 visit:
-    // Output the current subset
     printSubset(k);
-
-/* easy */
-    // Determine direction based on parity of k
     if (k & 1) {
-        // Odd k: try to increase S[0]
         if (S[0] + 1 < S[1]) {
             S[0]++;
             goto visit;
@@ -202,7 +168,6 @@ visit:
         }
     }
     else {
-        // Even k: try to decrease S[0]
         if (S[0] > 0) {
             S[0]--;
             goto visit;
@@ -214,7 +179,6 @@ visit:
     }
 
 decrease:
-    // Try to decrease S[j-1]
     if (S[j-1] >= j) {
         S[j-1] = S[j-2];
         S[j-2] = j - 2;
@@ -225,7 +189,6 @@ decrease:
     }
 
 increase:
-    // Try to increase S[j-1]
     if (S[j-1] + 1 < S[j]) {
         S[j-2] = S[j-1];
         S[j-1]++;
@@ -237,7 +200,7 @@ increase:
     }
 }
 
-/******************* GOSPER'S ALGORITHM ************************/
+/******************* GOSPER'S ALGORITHM *************************/
 /* TECHGLISH: Implements Gosper's algorithm for generating all  */
 /* k-subsets using bitwise operations. This algorithm           */
 /* represents subsets as bit vectors and uses an elegant bit    */
@@ -254,11 +217,12 @@ increase:
 
 // Contract: 3 <= k <= MAX_K, k < n <= 64; S has k+3 entries.
 void G_ksubsetGosper(const size_t k, const size_t n) {
-    // Initialize with first k-subset: binary representation 00...0011...11 (k ones)
+    // Initialize with first k-subset:
+    // binary representation 00...0011...11 (k ones)
     uint64_t x = (1ULL << k) - 1;
     // Stop at the last mask; no shift by n, including when n == 64.
     uint64_t last = x << (n - k);
-    
+
     for (;;) {
         /* Convert bit representation to integer array for output */
         size_t j = 0;
@@ -270,12 +234,11 @@ void G_ksubsetGosper(const size_t k, const size_t n) {
             mask <<= 1;
         }
         printSubset(k);
-        
-        if (x == last) break;
 
+        if (x == last) break;
         /* Generate the next k-subset using Gosper's hack */
         uint64_t u = x & -x;           // Isolate rightmost 1-bit
-        uint64_t v = x + u;            // Turn off rightmost 1-bit and propagate carry
+        uint64_t v = x + u;            // Turn off rightmost 1-bit
         x = v + (((v ^ x) / u) >> 2);  // Add displaced bits
     }
 }
@@ -319,16 +282,18 @@ int main(int argc, char* argv[]) {
 
     // Controllo valore massimo di k (mera programmazione difensiva)
     if (k > MAX_K) {
-        fprintf(stderr, "k deve essere minore o uguale a %u per questa implementazione.\n", MAX_K);
+        fprintf(stderr, "k deve essere minore o uguale a %u "
+                "per questa implementazione.\n", MAX_K);
         return EXIT_FAILURE;
     }
 
     if (k >= n) {
-        fprintf(stderr, "Questa implementazione richiede k < n (ricevuti k=%zu, n=%zu).\n", k, n);
+        fprintf(stderr, "Questa implementazione richiede k < n "
+                "(ricevuti k=%zu, n=%zu).\n", k, n);
         fprintf(stderr, "Uso: %s k n, con k < n\n", argv[0]);
         return EXIT_FAILURE;
     }
-        
+
     S = (int*)malloc((k + 3) * sizeof(int));
     if (NULL == S)
     {
@@ -336,8 +301,9 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
-    // Run Algorithm T (lexicographic order)
-    printf("T_ksubsetLex(%zu, %zu) per ordine colex (lex con indici decrescenti):\n", k, n);
+    // Run Algorithm T (colex order on increasing tuples)
+    printf("T_ksubsetLex(%zu, %zu) per ordine colex "
+           "(lex con indici decrescenti):\n", k, n);
     TotalSet = 0;
     T_ksubsetLex(k, n);
     printf("%" PRIu64 " subset generati\n", TotalSet);
@@ -353,7 +319,7 @@ int main(int argc, char* argv[]) {
     TotalSet = 0;
     G_ksubsetGosper(k, n);
     printf("%" PRIu64 " subset generati\n", TotalSet);
-    
+
     free(S);
 
     return EXIT_SUCCESS;
